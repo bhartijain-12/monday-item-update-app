@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    max-width: 600px;
+  }
+  
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  
+  #columnsContainer {
+    margin-bottom: 20px;
+  }
+  
+  .column-field {
+    margin-bottom: 10px;
+  }
+  
+  label {
+    display: block;
+    font-weight: bold;
+  }
+  
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #0073e6;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+  }
+  
+  button:hover {
+    background-color: #005bb5;
+  }
+  

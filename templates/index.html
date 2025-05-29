@@ -1,0 +1,46 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Monday.com Item Viewer</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<script src="https://cdn.jsdelivr.net/npm/@mondaydotcomorg/monday-sdk-js"></script>
+
+<body>
+  <h1>Search and Edit monday.com Item</h1>
+  
+  <div class="search-bar">
+    <input id="itemIdInput" type="number" placeholder="Enter Item ID" />
+    <button onclick="searchItem()">Search</button>
+  </div>
+  
+  <form id="itemForm" style="display:none;">
+    <div id="columnsContainer"></div>
+    <button type="button" onclick="saveItem()">Save</button>
+  </form>
+  
+  <script src="/static/main.js"></script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>monday.com Item Editor View</title>
+    <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js"></script>
+    <script src="/static/script.js" defer></script>
+</head>
+<body>
+    <h2>Search and Edit Item</h2>
+    <input type="text" id="item-id" placeholder="Enter Item ID" />
+    <button onclick="searchItem()">Search</button>
+
+    <div id="item-details" style="margin-top: 20px;"></div>
+
+    <button id="save-btn" onclick="saveItem()" style="display:none; margin-top: 10px;">Save Changes</button>
+</body>
+</html>
+
