@@ -148,7 +148,7 @@
 #     port = int(os.environ.get("PORT", 5000))
 #     app.run(host="0.0.0.0", port=port, debug=True)
 
-from flask import Flask, request, jsonify
+from flask import Flask, request,render_template, jsonify
 from flask_cors import CORS
 import requests
 import json
@@ -170,6 +170,11 @@ headers = {
     'Authorization': MONDAY_API_KEY,
     'Content-Type': 'application/json',
 }
+
+@app.route("/")
+ def index():
+    return render_template("index.html")
+
 
 @app.route('/get_item', methods=['POST'])
 def get_item():
