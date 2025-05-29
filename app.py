@@ -23,25 +23,11 @@ def index():
 @app.route("/get_item", methods=["POST"])
 def get_item():
     item_id = request.json.get("item_id")
-    query = """
-    query ($itemId: [Int]) {
-      items (ids: $itemId) {
-        id
-        name
-        column_values {
-          id
-          value
-          type
-          text
-          column {
-            title
-          }
-        }
-      }
-    }
-    """
+   
+    query = "{\"query\":\"query {\\r\\n  items(ids: "+item_id+") {\\r\\n    column_values {\\r\\n      id\\r\\n      value\\r\\n      type\\r\\n      text\\r\\n      column {\\r\\n        title\\r\\n      }\\r\\n    }\\r\\n  }\\r\\n}\",\"variables\":{}}"
+
     variables = {"itemId": [int(item_id)]}
-    response = requests.post(MONDAY_API_URL, json={"query": query, "variables": variables}, headers=headers)
+    response = requests.post(MONDAY_API_URL, data=query, headers=headers)
     return jsonify(response.json())
 
 @app.route("/update_item", methods=["POST"])

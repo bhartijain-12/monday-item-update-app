@@ -1,4 +1,4 @@
-const monday = mondaySdk(); // Make sure mondaySdk() is available
+const monday = mondaySdk(); 
 let currentItemId = null;
 let currentColumns = [];
 
