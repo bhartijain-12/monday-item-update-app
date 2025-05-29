@@ -82,7 +82,7 @@ load_dotenv()
 app = Flask(__name__)
 
 MONDAY_API_URL = "https://api.monday.com/v2"
-MONDAY_API_KEY = os.getenv("MONDAY_API_KEY")
+MONDAY_API_KEY = os.getenv("MONDAY_API_TOKEN")
 
 headers = {
     "Authorization": MONDAY_API_KEY,
