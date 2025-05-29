@@ -149,13 +149,23 @@
 #     app.run(host="0.0.0.0", port=port, debug=True)
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
+import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
-MONDAY_API_KEY = 'your_monday_api_key'
+# Get API key and setup endpoint
+MONDAY_API_KEY = os.getenv('MONDAY_API_KEY')
 MONDAY_API_URL = 'https://api.monday.com/v2'
 
+# Set up headers for Monday API
 headers = {
     'Authorization': MONDAY_API_KEY,
     'Content-Type': 'application/json',
@@ -163,11 +173,12 @@ headers = {
 
 @app.route('/get_item', methods=['POST'])
 def get_item():
-    data = request.json
+    data = request.get_json()
     item_id = data.get('item_id')
+
     query = """
     query ($id: [Int]) {
-      items (ids: $id) {
+      items(ids: $id) {
         id
         name
         column_values {
@@ -181,24 +192,30 @@ def get_item():
     }
     """
     variables = {"id": [int(item_id)]}
-    response = requests.post(MONDAY_API_URL, headers=headers, json={"query": query, "variables": variables})
-    return jsonify(response.json())
+
+    try:
+        response = requests.post(
+            MONDAY_API_URL,
+            headers=headers,
+            json={"query": query, "variables": variables}
+        )
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/update_item', methods=['POST'])
 def update_item():
-    data = request.json
+    data = request.get_json()
     item_id = data.get('item_id')
     updates = data.get('updates')
-    # Format updates dictionary into required format
-    # Monday.com expects a JSON string of column_values in mutation
+
     column_values = {}
     for u in updates:
-        # Convert value to JSON string, as Monday API expects
         column_values[u['id']] = u['value']
-    import json
+
     mutation = """
     mutation ($itemId: Int!, $columnVals: JSON!) {
-      change_multiple_column_values (item_id: $itemId, column_values: $columnVals) {
+      change_multiple_column_values(item_id: $itemId, column_values: $columnVals) {
         id
       }
     }
@@ -207,5 +224,19 @@ def update_item():
         "itemId": int(item_id),
         "columnVals": json.dumps(column_values)
     }
-    response = requests.post(MONDAY_API_URL, headers=headers, json={"query": mutation, "variables": variables})
-    return jsonify(response.json())
+
+    try:
+        response = requests.post(
+            MONDAY_API_URL,
+            headers=headers,
+            json={"query": mutation, "variables": variables}
+        )
+        return jsonify(response.json())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == '__main__':
+    # Use port from environment variable (Render sets it), fallback to 5000 for local dev
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)
+
