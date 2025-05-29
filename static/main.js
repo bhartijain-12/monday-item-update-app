@@ -20,7 +20,7 @@ function searchItem() {
 
       if (data.data && data.data.items && data.data.items.length > 0) {
         const item = data.data.items[0];
-        currentItemId = item.id;
+        currentItemId = itemId;
         currentColumns = item.column_values;
 
         let html = `<h3>Item: ${item.name}</h3>`;
