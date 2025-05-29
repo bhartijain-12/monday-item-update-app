@@ -30,8 +30,10 @@
 <head>
     <meta charset="UTF-8" />
     <title>monday.com Item Editor View</title>
-    <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js"></script>
-    <script src="/static/script.js" defer></script>
+    <!-- Load Monday SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js" defer></script>
+    <!-- Load your custom JS -->
+    <script src="/static/main.js" defer></script>
 </head>
 <body>
     <h2>Search and Edit Item</h2>
@@ -42,5 +44,7 @@
 
     <button id="save-btn" onclick="saveItem()" style="display:none; margin-top: 10px;">Save Changes</button>
 </body>
+</html>
+
 </html>
 
