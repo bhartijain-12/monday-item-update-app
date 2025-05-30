@@ -2,6 +2,13 @@ const monday = mondaySdk();
 let currentItemId = null;
 let currentColumns = [];
 
+monday.get("context").then((res) => {
+  console.log("Full context:", res); // Shows everything
+  const boardId = res.data.boardId;
+  console.log("Board ID:", boardId);
+  window.currentBoardId = boardId; // Optional: store it globally
+});
+
 function searchItem() {
   const itemId = document.getElementById("item-id").value.trim();
   if (!itemId) {
@@ -23,12 +30,12 @@ function searchItem() {
         currentItemId = itemId;
         currentColumns = item.column_values;
 
-        let html = `<h3>Item: ${item.name}</h3>`;
+        let html = ``;
         currentColumns.forEach((col) => {
           const safeText = col.text ? col.text.replace(/"/g, "&quot;") : "";
           html += `
-            <div style="margin-bottom:8px;">
-              <label><strong>${col.column.title}</strong> (${col.id}): </label>
+            <div style="margin-bottom:8px;width:50%">
+              <label><strong>${col.column.title}</strong> : </label>
               <input type="text" value="${safeText}" data-column="${col.id}" style="width:300px;" />
             </div>
           `;
@@ -54,13 +61,15 @@ function saveItem() {
     alert("No item loaded.");
     return;
   }
-
+    
   const updates = Array.from(inputs).map((input) => {
     return {
       id: input.dataset.column,
       value: input.value,
     };
   });
+  console.log("Updated data:", updates);
+
 
   fetch("/update_item", {
     method: "POST",

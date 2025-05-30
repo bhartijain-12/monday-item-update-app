@@ -26,35 +26,74 @@ def get_item():
    
     query = "{\"query\":\"query {\\r\\n  items(ids: "+item_id+") {\\r\\n    column_values {\\r\\n      id\\r\\n      value\\r\\n      type\\r\\n      text\\r\\n      column {\\r\\n        title\\r\\n      }\\r\\n    }\\r\\n  }\\r\\n}\",\"variables\":{}}"
 
-    variables = {"itemId": [int(item_id)]}
+    # variables = {"itemId": [int(item_id)]}
     response = requests.post(MONDAY_API_URL, data=query, headers=headers)
     return jsonify(response.json())
 
+# @app.route("/update_item", methods=["POST"])
+# def update_item():
+#     item_id = request.json.get("item_id")
+#     updates = request.json.get("updates") 
+#     results = []
+#     for column in updates:
+#         mutation = """
+#         mutation ($itemId: Int!, $columnId: String!, $value: JSON!) {
+#           change_column_value(item_id: $itemId, column_id: $columnId, value: $value) {
+#             id
+#           }
+#         }
+#         """
+#         # Convert the value to JSON string for the mutation
+#         value_json = json.dumps(column["value"])
+
+#         variables = {
+#             "itemId": int(item_id),
+#             "columnId": column["id"],
+#             "value": value_json
+#         }
+#         result = requests.post(MONDAY_API_URL, json={"query": mutation, "variables": variables}, headers=headers)
+#         results.append(result.json())
+
+#     return jsonify({"status": "updated", "results": results})
+
+
+
 @app.route("/update_item", methods=["POST"])
 def update_item():
-    item_id = request.json.get("item_id")
-    updates = request.json.get("updates") 
+    item_id = request.json.get("item_id")  # This should be a string for ID
+    board_id = request.json.get("board_id")  # Must be passed from client
+    updates = request.json.get("updates")
+
     results = []
+
     for column in updates:
         mutation = """
-        mutation ($itemId: Int!, $columnId: String!, $value: JSON!) {
-          change_column_value(item_id: $itemId, column_id: $columnId, value: $value) {
+        mutation ($boardId: ID!, $itemId: ID!, $columnId: String!, $value: JSON!) {
+          change_column_value(board_id: $boardId, item_id: $itemId, column_id: $columnId, value: $value) {
             id
           }
         }
         """
-        # Convert the value to JSON string for the mutation
-        value_json = json.dumps(column["value"])
+
+        value_json = json.dumps(column["value"])  # stringify value if needed
 
         variables = {
-            "itemId": int(item_id),
+            "boardId": str(board_id),
+            "itemId": str(item_id),
             "columnId": column["id"],
             "value": value_json
         }
-        result = requests.post(MONDAY_API_URL, json={"query": mutation, "variables": variables}, headers=headers)
-        results.append(result.json())
+
+        response = requests.post(
+            MONDAY_API_URL,
+            json={"query": mutation, "variables": variables},
+            headers=headers
+        )
+
+        results.append(response.json())
 
     return jsonify({"status": "updated", "results": results})
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
