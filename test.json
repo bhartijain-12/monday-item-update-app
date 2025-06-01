@@ -1,0 +1,1 @@
+{"query": "mutation {\n            change_column_value(\n                item_id: 2019884434,\n                board_id: 2019884428,\n                column_id: \"project_status\",\n                value: \"Not\"\n            ) {\n                id\n            }\n        }"}
