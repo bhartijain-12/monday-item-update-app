@@ -4,7 +4,7 @@ let currentBoardId = null;
 let users = [];
 let statusLabels = {};
 
-// Search for an item by ID, load data and metadata, then render form
+// Search for an item by ID, load data and metadata, then render form with sections
 async function searchItem() {
   const itemId = document.getElementById("item-id").value.trim();
   if (!itemId) {
@@ -27,12 +27,33 @@ async function searchItem() {
       currentColumns = item.column_values;
       currentColumns = currentColumns.filter((col) => col.type !== "subtasks");
       currentBoardId = item.board.id;
+      const boardName = item.board.name;
+
+      // Fetch section and allowed columns config for the board
+      const configResponse = await fetch("/get_column_config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ board_name: boardName }),
+      });
+      const configData = await configResponse.json();
+      const sections = configData.sections || [];
+
+      // Group currentColumns by section, filtering by allowed columns per section
+      const columnsBySection = {};
+      sections.forEach(({ section_name, allowed_columns }) => {
+        columnsBySection[section_name] = currentColumns.filter((col) =>
+          allowed_columns.includes(col.column.title)
+        );
+      });
+
+      // Flatten columns across all sections to check for user/status types
+      const allFilteredColumns = Object.values(columnsBySection).flat();
 
       // Determine if users or status labels are needed
       let needUsers = false;
       let needStatusLabels = false;
 
-      for (const col of currentColumns) {
+      for (const col of allFilteredColumns) {
         if (col.type === "people") needUsers = true;
         if (col.type === "status") needStatusLabels = true;
       }
@@ -47,7 +68,8 @@ async function searchItem() {
         statusLabels = {}; // Clear if not needed
       }
 
-      renderItemForm();
+      // Render form with sections and columns grouped
+      renderItemForm(columnsBySection);
       document.getElementById("save-btn").style.display = "inline-block";
     } else {
       alert("Item not found.");
@@ -87,62 +109,89 @@ async function getStatusLabels(boardId) {
 }
 
 
-function renderItemForm() {
+function renderItemForm(columnsBySection) {
   let html = "";
 
-  currentColumns.forEach((col) => {
-    const safeText = col.text ? col.text.replace(/"/g, "&quot;") : "";
+  // Sort section names alphabetically
+  const sortedSections = Object.keys(columnsBySection).sort((a, b) =>
+    a.toLowerCase().localeCompare(b.toLowerCase())
+  );
 
-    html += `
-      <div style="margin-bottom:8px;width:50%">
-        <label><strong>${col.column.title}</strong>:</label>
-    `;
+  sortedSections.forEach((sectionName) => {
+    html += `<h3 style="margin-top: 24px; " class="section-title">${sectionName}</h3>`;
 
-    if (col.type === "people") {
-      html += `
-        <select data-column="${
-          col.id
-        }" data-original="${safeText}" style="width:300px;">
-          ${users
-            .map(
-              (user) => `
-            <option value="${user.id}" ${
-                user.name === col.text ? "selected" : ""
-              }>${user.name}</option>
-          `
-            )
-            .join("")}
-        </select>
-      `;
-    } else if (col.type === "status" && statusLabels[col.id]) {
-      const labels = statusLabels[col.id].labels;
+    const cols = columnsBySection[sectionName];
 
-      html += `
-        <select data-column="${
-          col.id
-        }" data-original="${safeText}" style="width:300px;">
-          ${Object.entries(labels)
-            .map(
-              ([key, label]) => `
-            <option value="${label}" ${
-                col.text === label ? "selected" : ""
-              }>${label}</option>
-          `
-            )
-            .join("")}
-        </select>
-      `;
-    } else {
-      html += `
-        <input type="text" value="${safeText}" data-column="${col.id}" data-original="${safeText}" style="width:300px;" />
-      `;
-    }
+    // Wrap all section fields in a flex container to create rows
+    html += `<div style="display: flex; flex-wrap: wrap; gap: 16px;">`;
 
-    html += `</div>`;
+    cols.forEach((col) => {
+      const safeText = col.text ? col.text.replace(/"/g, "&quot;") : "";
+
+      html += `<div style="flex: 1 1 48%; min-width: 250px;">`;
+      // html += `<label><strong>${col.column.title}</strong>:</label><br/>`;
+      html += `<label style="display:block; margin-bottom: 2px;"><strong>${col.column.title}</strong></label>`;
+
+      const inputStyle = `width: 400px; padding: 4px; box-sizing: border-box;`;
+
+      if (col.type === "people") {
+        html += `
+          <select data-column="${
+            col.id
+          }" data-original="${safeText}" style="${inputStyle}">
+            ${users
+              .map(
+                (user) => `
+              <option value="${user.id}" ${
+                  user.name === col.text ? "selected" : ""
+                }>${user.name}</option>
+            `
+              )
+              .join("")}
+          </select>
+        `;
+      } else if (col.type === "status" && statusLabels[col.id]) {
+        const labels = statusLabels[col.id].labels;
+
+        html += `
+          <select data-column="${
+            col.id
+          }" data-original="${safeText}" style="${inputStyle}">
+            ${Object.entries(labels)
+              .map(
+                ([key, label]) => `
+              <option value="${label}" ${
+                  col.text === label ? "selected" : ""
+                }>${label}</option>
+            `
+              )
+              .join("")}
+          </select>
+        `;
+      } else {
+        html += `
+          <input type="text" value="${safeText}" data-column="${col.id}" data-original="${safeText}" style="${inputStyle}" />
+        `;
+      }
+
+      html += `</div>`;
+    });
+
+    html += `</div>`; // close flex container for section fields
   });
 
   document.getElementById("item-details").innerHTML = html;
 }
+
+
+
+
+
+
+
+
+
+
 
 // Clear the form and hide save button
 function clearForm() {
@@ -200,3 +249,5 @@ function saveItem() {
       alert("Failed to update item.");
     });
 }
+
+
