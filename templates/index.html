@@ -33,9 +33,123 @@
       /* No grid here, sections will each have their own grid */
     }
 
+    
     .section-container {
-      margin-bottom: 30px;
+        margin-bottom: 40px;                /* More vertical spacing between sections */
+        padding: 20px;                      /* Inner spacing around content */
+        border-radius: 12px;                /* Rounded corners for soft UI feel */
+        background-color: #f7faff;          /* Light background to distinguish sections */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+        border: 1px solid #e0e0e0;          /* Light border for definition */
+        transition: box-shadow 0.3s ease;   /* Smooth hover effect */
+      }
+      
+      .section-container:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); /* Slight lift on hover */
+      }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        color: white;
+        background-color: #0073ea;
+        padding: 10px 16px;
+        border-radius: 2px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: auto;
+      }
+      
+
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      
+      
     }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input[type="text"], select {
+      width: 500px;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>View and Edit Item</h2>
+
+  <!-- <div>
+    <input type="text" id="item-id" placeholder="Enter Item ID" />
+    <button onclick="searchItem()">Search</button>
+  </div> -->
+
+  <div id="item-details"></div>
+
+  <button id="save-btn" onclick="saveItem()" style="display: none;margin-top:20px;">Save Changes</button>
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>monday.com Item Editor View</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js" defer></script>
+  <script src="/static/main.js" defer></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 50px;
+    }
+
+    h2 {
+      color: blue;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #0073ea;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #item-details {
+      margin-top: 20px;
+      color: blue;
+     
+      /* No grid here, sections will each have their own grid */
+    }
+
+    
+    .section-container {
+        margin-bottom: 40px;                /* More vertical spacing between sections */
+        padding: 20px;                      /* Inner spacing around content */
+        border-radius: 12px;                /* Rounded corners for soft UI feel */
+        background-color: #f7faff;          /* Light background to distinguish sections */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+        border: 1px solid #e0e0e0;          /* Light border for definition */
+        transition: box-shadow 0.3s ease;   /* Smooth hover effect */
+      }
+      
+      .section-container:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); /* Slight lift on hover */
+      }
 
     .section-title {
         font-size: 18px;
@@ -84,4 +198,150 @@
 
   <button id="save-btn" onclick="saveItem()" style="display: none;margin-top:20px;">Save Changes</button>
 
+ -->
 
+
+
+
+
+
+<!--   
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>monday.com Item Editor View</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js" defer></script>
+  <script src="/static/main.js" defer></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: #333;
+      margin: 50px;
+    }
+
+    h2 {
+      color: #1a365d;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #003d80;
+    }
+
+    #item-details {
+      margin-top: 20px;
+    }
+
+    .section-container {
+      margin-bottom: 30px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #1e40af;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 6px 6px 0 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .section-fields {
+      padding: 20px;
+      display: none;
+      background-color: #f9fafb;
+    }
+
+    .section-container.active .section-fields {
+      display: block;
+    }
+
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      max-width: 480px;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      background-color: #ffffff;
+      color: #111827;
+      font-size: 14px;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+    }
+
+    input#item-id {
+      padding: 8px;
+      font-size: 14px;
+      width: 220px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+
+    #save-btn {
+      margin-top: 20px;
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("section-title")) {
+          const container = e.target.closest(".section-container");
+          container.classList.toggle("active");
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <h2>Search and Edit Item</h2>
+
+  <div>
+    <input type="text" id="item-id" placeholder="Enter Item ID" />
+    <button onclick="searchItem()">Search</button>
+  </div>
+
+  <div id="item-details"></div>
+
+  <button id="save-btn" onclick="saveItem()" style="display: none;">Save Changes</button>
+</body>
+</html> -->

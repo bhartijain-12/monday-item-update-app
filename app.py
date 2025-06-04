@@ -155,7 +155,7 @@ def get_column_config():
         return jsonify({"sections": []})
 
     # Sort sections alphabetically by section_name
-    matched_sections.sort(key=lambda x: x["section_name"].lower())
+    #matched_sections.sort(key=lambda x: x["section_name"].lower())
 
     print("Matched sections:", matched_sections)
     return jsonify({"sections": matched_sections})
