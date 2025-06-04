@@ -10,13 +10,11 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f4f6f8;
-      color: #222;
+      margin: 50px;
     }
 
     h2 {
-      color: #0073ea;
+      color: blue;
     }
 
     button {
@@ -29,71 +27,69 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #005bb5;
-    }
-
-    input[type="text"] {
-      padding: 8px;
-      width: 250px;
-      margin-right: 10px;
-      border-radius: 4px;
-      border: 1px solid #ccc;
+    #item-details {
+      margin-top: 20px;
+      color: blue;
     }
 
     .section-container {
-      margin-top: 24px;
+      margin-bottom: 30px;
       border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: white;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
     }
 
     .section-title {
+      font-size: 18px;
+      font-weight: bold;
       background-color: #0073ea;
       color: white;
-      padding: 12px 16px;
+      padding: 10px 16px;
+      border-radius: 6px 6px 0 0;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 16px;
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
+      user-select: none;
     }
 
     .section-fields {
       padding: 16px;
-      display: none;
+      display: none; /* hidden by default */
+      background-color: #f9f9f9;
+      border-top: 1px solid #ccc;
+    }
+
+    .section-container.active .section-fields {
+      display: block;
     }
 
     .fields-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 16px;
-    }
-
-    .field-block {
-      flex: 1 1 48%;
-      min-width: 250px;
     }
 
     label {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
 
     input[type="text"], select {
-      width: 100%;
+      width: 500px;
       padding: 6px;
       border-radius: 4px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    #save-btn {
-      margin-top: 20px;
     }
   </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("section-title")) {
+          const container = e.target.closest(".section-container");
+          container.classList.toggle("active");
+        }
+      });
+    });
+  </script>
 </head>
 <body>
   <h2>Search and Edit Item</h2>
@@ -103,21 +99,8 @@
     <button onclick="searchItem()">Search</button>
   </div>
 
-  <!-- Initially hidden, shown after search -->
-  <div id="item-details" style="display: none;"></div>
+  <div id="item-details"></div>
 
-  <button id="save-btn" onclick="saveItem()" style="display: none;">Save Changes</button>
-
-  <script>
-    // Optional: Collapsible sections logic
-    document.addEventListener("click", function (e) {
-      if (e.target.classList.contains("section-title")) {
-        const next = e.target.nextElementSibling;
-        if (next && next.classList.contains("section-fields")) {
-          next.style.display = next.style.display === "none" ? "block" : "none";
-        }
-      }
-    });
-  </script>
+  <button id="save-btn" onclick="saveItem()" style="display: none; margin-top: 20px;">Save Changes</button>
 </body>
 </html>
