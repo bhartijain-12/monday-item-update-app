@@ -10,19 +10,19 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      color: #1a1a1a;
-      margin: 50px;
+      margin: 40px;
+      background-color: #f4f6f8;
+      color: #222;
     }
 
     h2 {
-      color: #0047ab;
+      color: #0073ea;
     }
 
     button {
       padding: 8px 16px;
       font-size: 14px;
-      background-color: #0047ab;
+      background-color: #0073ea;
       color: white;
       border: none;
       border-radius: 5px;
@@ -30,73 +30,68 @@
     }
 
     button:hover {
-      background-color: #003580;
+      background-color: #005bb5;
     }
 
-    #item-details {
-      margin-top: 20px;
+    input[type="text"] {
+      padding: 8px;
+      width: 250px;
+      margin-right: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
     }
 
     .section-container {
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      overflow: hidden;
-      background-color: #f4f4f4;
+      margin-top: 24px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: white;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     }
 
-    .section-header {
-      background-color: #0047ab;
+    .section-title {
+      background-color: #0073ea;
       color: white;
-      padding: 14px 18px;
+      padding: 12px 16px;
+      cursor: pointer;
       font-weight: bold;
       font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
     }
 
-    .section-content {
-      padding: 20px;
+    .section-fields {
+      padding: 16px;
       display: none;
-      background-color: #f9f9f9;
     }
 
     .fields-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .field-block {
+      flex: 1 1 48%;
+      min-width: 250px;
     }
 
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       font-weight: bold;
-      color: #333;
     }
 
     input[type="text"], select {
       width: 100%;
-      padding: 8px;
+      padding: 6px;
       border-radius: 4px;
       border: 1px solid #ccc;
-      background-color: #fff;
-      color: #000;
+      box-sizing: border-box;
     }
 
-    input:focus, select:focus {
-      border-color: #0047ab;
-      outline: none;
-    }
-
-    .arrow {
-      font-size: 12px;
-      transition: transform 0.2s ease;
-    }
-
-    .rotated {
-      transform: rotate(90deg);
+    #save-btn {
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -108,43 +103,21 @@
     <button onclick="searchItem()">Search</button>
   </div>
 
-  <div id="item-details">
-    <!-- Collapsible section -->
-    <div class="section-container">
-      <div class="section-header" onclick="toggleSection(this)">
-        General Information
-        <span class="arrow">&#9654;</span>
-      </div>
-      <div class="section-content">
-        <div class="fields-grid">
-          <div>
-            <label for="name">Name</label>
-            <input type="text" id="name" />
-          </div>
-          <div>
-            <label for="status">Status</label>
-            <select id="status">
-              <option>Open</option>
-              <option>In Progress</option>
-              <option>Done</option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Initially hidden, shown after search -->
+  <div id="item-details" style="display: none;"></div>
 
-  <button id="save-btn" onclick="saveItem()" style="display: none; margin-top: 20px;">Save Changes</button>
+  <button id="save-btn" onclick="saveItem()" style="display: none;">Save Changes</button>
 
   <script>
-    function toggleSection(header) {
-      const content = header.nextElementSibling;
-      const arrow = header.querySelector(".arrow");
-      const isVisible = content.style.display === "block";
-
-      content.style.display = isVisible ? "none" : "block";
-      arrow.classList.toggle("rotated", !isVisible);
-    }
+    // Optional: Collapsible sections logic
+    document.addEventListener("click", function (e) {
+      if (e.target.classList.contains("section-title")) {
+        const next = e.target.nextElementSibling;
+        if (next && next.classList.contains("section-fields")) {
+          next.style.display = next.style.display === "none" ? "block" : "none";
+        }
+      }
+    });
   </script>
 </body>
 </html>
