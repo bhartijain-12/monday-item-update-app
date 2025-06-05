@@ -1,16 +1,18 @@
+const monday = mondaySdk();
 let currentItemId = null;
 let currentColumns = [];
 let currentBoardId = null;
 let users = [];
 let statusLabels = {};
 
-const monday = window.mondaySdk(); // initialize monday sdk
+// initialize monday sdk
 
 // Called on page load
 async function initialize() {
   try {
     // Get context info from monday app - includes itemId, boardId
     const context = await monday.getContext();
+    console.log("Monday Context:",context);
 
     if (context && context.itemId && context.boardId) {
       currentItemId = context.itemId;
@@ -333,7 +335,6 @@ function saveItem() {
     });
 }
 window.addEventListener("DOMContentLoaded", initialize);
-
 
 // let currentItemId = null;
 // let currentColumns = [];
