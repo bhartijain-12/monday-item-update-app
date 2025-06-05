@@ -1,39 +1,38 @@
-document.addEventListener("DOMContentLoaded", async function () {
-  const monday = window.mondaySdk();
-
-  monday.get("itemId").then((res) => {
-    const itemId = res.data;
-    if (itemId) {
-      document.getElementById("item-id").value = itemId; // not shown now, but still useful
-      searchItem(itemId);
-    } else {
-      alert("Could not load item ID from context.");
-    }
-  });
-});
-
 let currentItemId = null;
 let currentColumns = [];
 let currentBoardId = null;
 let users = [];
 let statusLabels = {};
 
-// Search for an item by ID, load data and metadata, then render form with sections
-// async function searchItem() {
-//   const itemId = document.getElementById("item-id").value.trim();
-//   if (!itemId) {
-//     alert("Please enter an Item ID");
-//     return;
-//   }
-async function searchItem(providedItemId) {
-  const itemId =
-    providedItemId || document.getElementById("item-id").value.trim();
-  if (!itemId) {
-    alert("Please enter an Item ID");
-    return;
-  }
+const monday = window.mondaySdk(); // initialize monday sdk
 
+// Called on page load
+async function initialize() {
   try {
+    // Get context info from monday app - includes itemId, boardId
+    const context = await monday.getContext();
+
+    if (context && context.itemId && context.boardId) {
+      currentItemId = context.itemId;
+      currentBoardId = context.boardId;
+
+      // Set the item id input field if you want (optional)
+      document.getElementById("item-id").value = currentItemId;
+
+      // Fetch and load item data automatically
+      await loadItemData(currentItemId, currentBoardId);
+    } else {
+      alert("No item context found.");
+    }
+  } catch (err) {
+    console.error("Error getting monday context:", err);
+  }
+}
+
+// Use this function to load item data by ID and boardId
+async function loadItemData(itemId, boardId) {
+  try {
+    // Fetch item details from backend
     const response = await fetch("/get_item", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -47,10 +46,10 @@ async function searchItem(providedItemId) {
       currentItemId = itemId;
       currentColumns = item.column_values;
       currentColumns = currentColumns.filter((col) => col.type !== "subtasks");
-      currentBoardId = item.board.id;
+
       const boardName = item.board.name;
 
-      // Fetch section and allowed columns config for the board
+      // Fetch config for this board
       const configResponse = await fetch("/get_column_config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,7 +58,7 @@ async function searchItem(providedItemId) {
       const configData = await configResponse.json();
       const sections = configData.sections || [];
 
-      // Group currentColumns by section, filtering by allowed columns per section
+      // Group columns by sections
       const columnsBySection = {};
       sections.forEach(({ section_name, allowed_columns }) => {
         columnsBySection[section_name] = currentColumns.filter((col) =>
@@ -67,10 +66,9 @@ async function searchItem(providedItemId) {
         );
       });
 
-      // Flatten columns across all sections to check for user/status types
+      // Check for user and status columns
       const allFilteredColumns = Object.values(columnsBySection).flat();
 
-      // Determine if users or status labels are needed
       let needUsers = false;
       let needStatusLabels = false;
 
@@ -79,18 +77,11 @@ async function searchItem(providedItemId) {
         if (col.type === "status") needStatusLabels = true;
       }
 
-      if (needUsers) {
-        await getUsers();
-      }
+      if (needUsers) await getUsers();
+      if (needStatusLabels) await getStatusLabels(currentBoardId);
+      else statusLabels = {};
 
-      if (needStatusLabels) {
-        await getStatusLabels(currentBoardId);
-      } else {
-        statusLabels = {}; // Clear if not needed
-      }
-
-      // Render form with sections and columns grouped
-      renderItemForm(columnsBySection);
+      renderItemForm(columnsBySection, sections);
       document.getElementById("save-btn").style.display = "inline-block";
     } else {
       alert("Item not found.");
@@ -102,6 +93,91 @@ async function searchItem(providedItemId) {
     clearForm();
   }
 }
+
+// let currentItemId = null;
+// let currentColumns = [];
+// let currentBoardId = null;
+// let users = [];
+// let statusLabels = {};
+
+// // Search for an item by ID, load data and metadata, then render form with sections
+// async function searchItem() {
+//   const itemId = document.getElementById("item-id").value.trim();
+//   if (!itemId) {
+//     alert("Please enter an Item ID");
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch("/get_item", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ item_id: itemId }),
+//     });
+//     const data = await response.json();
+
+//     if (data.data && data.data.items && data.data.items.length > 0) {
+//       const item = data.data.items[0];
+
+//       currentItemId = itemId;
+//       currentColumns = item.column_values;
+//       // Exclude subtasks columns if any
+//       currentColumns = currentColumns.filter((col) => col.type !== "subtasks");
+//       currentBoardId = item.board.id;
+//       const boardName = item.board.name;
+
+//       // Fetch section and allowed columns config for the board
+//       const configResponse = await fetch("/get_column_config", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ board_name: boardName }),
+//       });
+//       const configData = await configResponse.json();
+//       const sections = configData.sections || [];
+
+//       // Group currentColumns by section, filtering by allowed columns per section
+//       const columnsBySection = {};
+//       sections.forEach(({ section_name, allowed_columns }) => {
+//         columnsBySection[section_name] = currentColumns.filter((col) =>
+//           allowed_columns.includes(col.column.title)
+//         );
+//       });
+
+//       // Flatten columns across all sections to check for user/status types
+//       const allFilteredColumns = Object.values(columnsBySection).flat();
+
+//       // Determine if users or status labels are needed
+//       let needUsers = false;
+//       let needStatusLabels = false;
+
+//       for (const col of allFilteredColumns) {
+//         if (col.type === "people") needUsers = true;
+//         if (col.type === "status") needStatusLabels = true;
+//       }
+
+//       if (needUsers) {
+//         await getUsers();
+//       }
+
+//       if (needStatusLabels) {
+//         await getStatusLabels(currentBoardId);
+//       } else {
+//         statusLabels = {}; // Clear if not needed
+//       }
+
+//       // Render form with sections and columns grouped
+//       renderItemForm(columnsBySection, sections);
+//       document.getElementById("save-btn").style.display = "inline-block";
+//     } else {
+//       alert("Item not found.");
+//       clearForm();
+//     }
+//   } catch (err) {
+//     console.error("Error fetching item:", err);
+//     alert("Failed to fetch item.");
+//     clearForm();
+//   }
+// }
 
 // Fetch users from server
 async function getUsers() {
@@ -129,27 +205,23 @@ async function getStatusLabels(boardId) {
   }
 }
 
-function renderItemForm(columnsBySection) {
+// Render the form with sections in backend order
+function renderItemForm(columnsBySection, sections) {
   let html = "";
 
-  // Sort section names alphabetically
-  const sortedSections = Object.keys(columnsBySection).sort((a, b) =>
-    a.toLowerCase().localeCompare(b.toLowerCase())
-  );
+  // Use sections order from backend directly
+  sections.forEach(({ section_name }) => {
+    const cols = columnsBySection[section_name];
+    if (!cols) return; // skip if no columns for section
 
-  sortedSections.forEach((sectionName) => {
-    const cols = columnsBySection[sectionName];
     html += `<div class="section-container">`;
-    html += `<h3 style="margin-top: 24px; " class="section-title">${sectionName}</h3>`;
-
-    // Wrap all section fields in a flex container to create rows
+    html += `<h3 style="margin-top: 24px;" class="section-title">${section_name}</h3>`;
     html += `<div style="display: flex; flex-wrap: wrap; gap: 16px;">`;
 
     cols.forEach((col) => {
       const safeText = col.text ? col.text.replace(/"/g, "&quot;") : "";
 
       html += `<div style="flex: 1 1 48%; min-width: 250px;">`;
-      // html += `<label><strong>${col.column.title}</strong>:</label><br/>`;
       html += `<label style="display:block; margin-bottom: 2px;"><strong>${col.column.title}</strong></label>`;
 
       const inputStyle = `width: 400px; padding: 4px; box-sizing: border-box;`;
@@ -198,7 +270,7 @@ function renderItemForm(columnsBySection) {
     });
 
     html += `</div>`;
-    html += `</div>`; // close flex container for section fields
+    html += `</div>`;
   });
 
   document.getElementById("item-details").innerHTML = html;
@@ -260,6 +332,8 @@ function saveItem() {
       alert("Failed to update item.");
     });
 }
+window.addEventListener("DOMContentLoaded", initialize);
+
 
 // let currentItemId = null;
 // let currentColumns = [];
@@ -501,4 +575,121 @@ function saveItem() {
 //       console.error("Error updating item:", err);
 //       alert("Failed to update item.");
 //     });
+// }
+
+// document.addEventListener("DOMContentLoaded", async function () {
+//   const monday = window.mondaySdk();
+
+//   monday.get("itemId").then((res) => {
+//     const itemId = res.data;
+//     if (itemId) {
+//       document.getElementById("item-id").value = itemId; // not shown now, but still useful
+//       searchItem(itemId);
+//     } else {
+//       alert("Could not load item ID from context.");
+//     }
+//   });
+// });
+
+// let currentItemId = null;
+// let currentColumns = [];
+// let currentBoardId = null;
+// let users = [];
+// let statusLabels = {};
+
+// // Search for an item by ID, load data and metadata, then render form with sections
+// // async function searchItem() {
+// //   const itemId = document.getElementById("item-id").value.trim();
+// //   if (!itemId) {
+// //     alert("Please enter an Item ID");
+// //     return;
+// //   }
+// async function searchItem(providedItemId) {
+//   const itemId = providedItemId || document.getElementById("item-id").value.trim();
+//   if (!itemId) {
+//     alert("Please enter an Item ID");
+//     return;
+//   }
+
+// async function searchItem() {
+//   const itemId = document.getElementById("item-id").value.trim();
+//   if (!itemId) {
+//     alert("Please enter an Item ID");
+//     return;
+//   }
+
+//   try {
+//     // Fetch item with columns and board info
+//     const response = await fetch("/get_item", {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ item_id: itemId }),
+//     });
+//     const data = await response.json();
+
+//     if (data.data && data.data.items && data.data.items.length > 0) {
+//       const item = data.data.items[0];
+
+//       currentItemId = itemId;
+//       currentColumns = item.column_values;
+//       currentColumns = currentColumns.filter((col) => col.type !== "subtasks");
+//       currentBoardId = item.board.id;
+//       const boardName = item.board.name;
+
+//       // Fetch section and column config from master board
+//       const configResponse = await fetch("/get_sections_columns", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ board_name: boardName }),
+//       });
+//       const configData = await configResponse.json();
+//       const sections = configData.sections || [];
+
+//       // Now we want to render each section with only columns that are defined in that section.
+//       // For each section, filter currentColumns by matching column.title with section column title
+
+//       const columnsBySection = {};
+
+//       sections.forEach(({ section_name, columns }) => {
+//         // Filter current item columns by titles defined in this section.columns
+//         const allowedTitles = columns.map((c) => c.title);
+
+//         const filteredCols = currentColumns.filter((col) =>
+//           allowedTitles.includes(col.column.title)
+//         );
+
+//         // Sort filteredCols by the same order as in section.columns
+//         filteredCols.sort((a, b) => {
+//           const aIndex = allowedTitles.indexOf(a.column.title);
+//           const bIndex = allowedTitles.indexOf(b.column.title);
+//           return aIndex - bIndex;
+//         });
+
+//         columnsBySection[section_name] = filteredCols;
+//       });
+
+//       // Determine if users or status labels are needed
+//       const allFilteredColumns = Object.values(columnsBySection).flat();
+//       let needUsers = false;
+//       let needStatusLabels = false;
+//       for (const col of allFilteredColumns) {
+//         if (col.type === "people") needUsers = true;
+//         if (col.type === "status") needStatusLabels = true;
+//       }
+//       if (needUsers) await getUsers();
+//       if (needStatusLabels) await getStatusLabels(currentBoardId);
+//       else statusLabels = {};
+
+//       // Render form
+//       renderItemForm(columnsBySection);
+//       document.getElementById("save-btn").style.display = "inline-block";
+//     } else {
+//       alert("Item not found.");
+//       clearForm();
+//     }
+//   } catch (err) {
+//     console.error("Error fetching item:", err);
+//     alert("Failed to fetch item.");
+//     clearForm();
+//   }
 // }
