@@ -21,10 +21,12 @@ function initialize() {
       currentBoardId = boardId;
 
       // Optional: set hidden field, in case it's used somewhere
-      document.getElementById("item-id").value = itemId;
+      //document.getElementById("item-id").value = itemId;
 
       // ✅ Auto trigger search
       searchItem();
+      console.log("Calling searchItem with itemId:", currentItemId);
+
     } else {
       alert("Failed to load item context.");
     }
