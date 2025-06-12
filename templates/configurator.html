@@ -1,0 +1,91 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Board View - Workspace Selector</title>
+</head>
+<body>
+    <h2>Select Workspace</h2>
+    <label for="workspaceDropdown">Workspace:</label>
+    <select id="workspaceDropdown">
+    <option value="">None</option>
+    </select>
+     
+    <h2>Select Board</h2>
+    <label for="boardDropdown">Boards:</label>
+    <select id="boardDropdown">
+    <option value="">None</option>
+    </select>
+
+
+    <!-- ✅ JS must be at the end -->
+    <!-- <script src="{{ url_for('static', filename='configurator.js') }}"></script>
+</body>
+</html> -->
+
+ -->
+
+
+ <!DOCTYPE html>
+<html>
+    <head>
+        <title>Board View - Workspace Selector</title>
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+        <style>
+            .pill {
+                display: inline-block;
+                padding: 5px 10px;
+                margin: 5px;
+                background-color: #e0e0e0;
+                border-radius: 15px;
+                cursor: move;
+            }
+    
+            .section {
+                border: 2px dashed #ccc;
+                margin-top: 20px;
+                padding: 10px;
+                min-height: 60px;
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+    
+            .section-card {
+                border: 1px solid #aaa;
+                padding: 10px;
+                margin: 10px 0;
+                border-radius: 8px;
+                background-color: #f9f9f9;
+            }
+        </style>
+    </head>
+    
+<body>
+    <h2>Select Workspace</h2>
+    <label for="workspaceDropdown">Workspace:</label>
+    <select id="workspaceDropdown">
+        <option value="">None</option>
+    </select>
+
+    <h2>Select Board</h2>
+    <label for="boardDropdown">Boards:</label>
+    <select id="boardDropdown">
+        <option value="">None</option>
+    </select>
+
+    <div>
+        <button id="loadColumnsBtn">Load Columns</button>
+    </div>
+
+    <h3>Columns</h3>
+    <div id="columnsContainer"></div>
+
+    <h3>Create Section</h3>
+    <input type="text" id="sectionNameInput" placeholder="Section Name">
+    <button id="createSectionBtn">Create Section</button>
+
+    <div id="sectionsContainer"></div>
+
+    <script src="{{ url_for('static', filename='configurator.js') }}"></script>
+</body>
+</html>
