@@ -163,6 +163,8 @@ def create_section():
             order_number_col_id: str(order_number)
         }
         column_values_str = json.dumps(column_values_dict)  # Properly escaped for GraphQL
+        escaped_column_values_str = column_values_str.replace('"', '\\"')
+        # column_values: "{column_values_str.replace('"', '\\"')}"
 
         # Create item in Master Table
         create_item_query = {
@@ -171,7 +173,8 @@ def create_section():
                 create_item(
                     board_id: {master_table_board_id},
                     item_name: "{board_name}",
-                    column_values: "{column_values_str.replace('"', '\\"')}"
+                    
+                    column_values: "{escaped_column_values_str}"
                 ) {{
                     id
                 }}
