@@ -5,10 +5,10 @@ let currentBoardId = null;
 let users = [];
 let statusLabels = {};
 
-// 🔄 Automatically initialize on page load
+// Automatically initialize on page load
 window.addEventListener("DOMContentLoaded", initialize);
 
-// ✅ New: initialize function to set up context and trigger search
+// New: initialize function to set up context and trigger search
 function initialize() {
   monday.get("context").then((res) => {
     console.log("Full context:", res);
@@ -23,7 +23,7 @@ function initialize() {
       // Optional: set hidden field, in case it's used somewhere
       //document.getElementById("item-id").value = itemId;
 
-      // ✅ Auto trigger search
+      //  Auto trigger search
       searchItem();
       console.log("Calling searchItem with itemId:", currentItemId);
 
@@ -97,7 +97,7 @@ async function searchItem() {
   }
 }
 
-// 👥 Fetch users from backend
+// Fetch users from backend
 async function getUsers() {
   try {
     const response = await fetch("/users", { method: "GET" });
@@ -108,7 +108,7 @@ async function getUsers() {
   }
 }
 
-// 🎨 Fetch status labels for the board
+//  Fetch status labels for the board
 async function getStatusLabels(boardId) {
   try {
     const response = await fetch("/get_status_labels", {
@@ -123,7 +123,7 @@ async function getStatusLabels(boardId) {
   }
 }
 
-// 🖋️ Render input fields grouped by section
+// Render input fields grouped by section
 function renderItemForm(columnsBySection, sections) {
   let html = "";
 
@@ -139,7 +139,7 @@ function renderItemForm(columnsBySection, sections) {
       const safeText = col.text ? col.text.replace(/"/g, "&quot;") : "";
       html += `<div style="flex: 1 1 48%; min-width: 250px;">`;
       html += `<label style="display:block; margin-bottom: 2px;"><strong>${col.column.title}</strong></label>`;
-      const inputStyle = `width: 400px; padding: 4px; box-sizing: border-box;`;
+      const inputStyle = `width: 250px; padding: 4px; box-sizing: border-box;`;
 
       if (col.type === "people") {
         html += `

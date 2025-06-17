@@ -95,168 +95,483 @@ def get_columns(board_id):
         return jsonify({"error": "Failed to fetch columns"}), 500
 
 
+@app.route("/get_existing_config")
+def get_existing_config():
+    board_name = request.args.get("board_name")
+    print("Board name",board_name)
 
-@app.route("/create_section", methods=["POST"])
-def create_section():
+    if not board_name:
+        return jsonify({"error": "Missing board name or subitem board id"}), 400
+
     master_table_board_id = os.getenv("MASTER_BOARD_ID")
-    data = request.json
-    board_id = data.get("board_id")
+    print("Master Table Board ID:", master_table_board_id)
+    print("Board Name:", board_name)
 
-    sections = data.get("sections", [])
-
-    if not board_id or not sections:
-        return jsonify({"success": False, "error": "Missing board_id or sections"})
-
-    # Step 2: Get column IDs for "Section Name" and "Order Number"
-    column_query = {
+    # Step 1: Fetch items from master table
+    item_query = {
         "query": f"""
         query {{
             boards(ids: {master_table_board_id}) {{
+                items_page(limit: 500) {{
+                    items {{
+                        id
+                        name
+                        column_values {{
+                            id
+                            text
+                            value
+                            column {{
+                                title
+                            }}
+                        }}
+                        subitems {{
+                            id
+                            name
+                            column_values {{
+                                id
+                                text
+                                column {{
+                                    title
+                                }}
+                            }}
+                            board {{
+                                id
+                                name
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        }}
+        """
+    }
+
+    response = requests.post(MONDAY_API_URL, headers=headers, json=item_query)
+    data = response.json()
+
+    if "errors" in data:
+        return jsonify({"error": "Failed to load existing sections"}), 500
+
+    items = data["data"]["boards"][0]["items_page"]["items"]
+
+
+
+    subitem_board_id = None
+    for item in items:
+        subitems = item.get("subitems", [])
+        if subitems:
+            subitem_board_id = subitems[0]["board"]["id"]
+            print("Subitem Board ID (from backend):", subitem_board_id)
+            break
+
+    if not subitem_board_id:
+        return jsonify({"error": "No subitems found to determine subitem board ID"}), 500
+
+    # Step 2: Fetch subitem board column metadata
+    subitem_columns_query = {
+        "query": f"""
+        query {{
+            boards(ids: {subitem_board_id}) {{
                 columns {{
                     id
                     title
                 }}
             }}
         }}
-    """
+        """
     }
+    col_response = requests.post(MONDAY_API_URL, headers=headers, json=subitem_columns_query)
+    col_data = col_response.json()
 
-    col_res = requests.post(MONDAY_API_URL, headers=headers, json=column_query)
-    column_data = col_res.json()
+    if "errors" in col_data:
+        return jsonify({"error": "Failed to load subitem board columns"}), 500
+
     column_map = {
-        col["title"].lower(): col["id"]
-        for col in column_data["data"]["boards"][0]["columns"]
+        col["title"].strip().lower(): col["id"]
+        for col in col_data["data"]["boards"][0]["columns"]
     }
 
+    order_col_title = "order number"
+    is_visible_title = "isvisible"
+    order_col_id = column_map.get(order_col_title)
+    is_visible_col_id = column_map.get(is_visible_title)
+
+    if not order_col_id or not is_visible_col_id:
+        return jsonify({"error": "Missing required subitem columns"}), 500
+
+    # Step 3: Filter and prepare section data
+    sections = []
+
+    for item in items:
+        if item["name"] != board_name:
+            continue
+
+        section_name = ""
+        order_number = 0
+
+        for col in item["column_values"]:
+            title = col.get("column", {}).get("title", "").lower()
+            if title == "section name":
+                section_name = col["text"]
+            elif title == "order number":
+                try:
+                    order_number = int(col["text"])
+                except:
+                    order_number = 0
+
+        subitems = item.get("subitems", [])
+
+        # Sort and filter subitems by order number and visibility
+        def get_order(sub):
+            for col in sub.get("column_values", []):
+                if col.get("column", {}).get("title", "").lower() == order_col_title:
+                    return int(col.get("text", "0")) if col.get("text", "").isdigit() else 0
+            return 0
+
+        def is_visible(sub):
+            for col in sub.get("column_values", []):
+                if col.get("column", {}).get("title", "").lower() == is_visible_title:
+                    return col.get("text", "").strip().lower() == "v"
+            return False
+
+        sorted_subitems = sorted(
+            [sub for sub in subitems if is_visible(sub)],
+            key=get_order
+        )
+
+        column_titles = [sub["name"] for sub in sorted_subitems]
+
+        sections.append({
+            "section_name": section_name,
+            "order_number": order_number,
+            "columns": column_titles
+        })
+
+    # Sort sections by their order number
+    sections.sort(key=lambda x: x["order_number"])
+
+    return jsonify(sections)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# @app.route("/create_section", methods=["POST"])
+# def create_section():
+#     master_table_board_id = os.getenv("MASTER_BOARD_ID")
+#     data = request.json
+#     board_id = data.get("board_id")
+
+#     sections = data.get("sections", [])
+
+#     if not board_id or not sections:
+#         return jsonify({"success": False, "error": "Missing board_id or sections"})
+
+#     # Step 2: Get column IDs for "Section Name" and "Order Number"
+#     column_query = {
+#         "query": f"""
+#         query {{
+#             boards(ids: {master_table_board_id}) {{
+#                 columns {{
+#                     id
+#                     title
+#                 }}
+#             }}
+#         }}
+#     """
+#     }
+
+#     col_res = requests.post(MONDAY_API_URL, headers=headers, json=column_query)
+#     column_data = col_res.json()
+#     column_map = {
+#         col["title"].lower(): col["id"]
+#         for col in column_data["data"]["boards"][0]["columns"]
+#     }
+
+#     section_name_col_id = column_map.get("section name")
+#     order_number_col_id = column_map.get("order number")
+#     subitem_column_id = column_map.get("subitems")
+#     print("Subitem Column id",subitem_column_id)
+
+#     if not section_name_col_id or not order_number_col_id:
+#         return jsonify({"success": False, "error": "Column IDs not found in Master Table"})
+    
+
+#     # Step 2.5: Get the name of the board by board_id
+#     board_name_query = {
+#         "query": f"""
+#         query {{
+#             boards(ids: {board_id}) {{
+#                 name
+#             }}
+#         }}
+#         """
+#     }
+
+#     board_res = requests.post(MONDAY_API_URL, headers=headers, json=board_name_query)
+#     board_name = board_res.json()["data"]["boards"][0]["name"]
+#     print("board_ndvdfvdfvdfvdfame",board_name)
+
+#     for section in sections:
+#         section_name = section["section_name"]
+#         order_number = section["order_number"]
+#         columns = section.get("columns", [])
+
+#         # Prepare column_values as JSON string
+#         column_values_dict = {
+#             section_name_col_id: section_name,
+#             order_number_col_id: str(order_number)
+#         }
+#         column_values_str = json.dumps(column_values_dict)  # Properly escaped for GraphQL
+#         escaped_column_values_str = column_values_str.replace('"', '\\"')
+#         # column_values: "{column_values_str.replace('"', '\\"')}"
+
+#         # Create item in Master Table
+#         create_item_query = {
+#             "query": f"""
+#             mutation {{
+#                 create_item(
+#                     board_id: {master_table_board_id},
+#                     item_name: "{board_name}",
+                    
+#                     column_values: "{escaped_column_values_str}"
+#                 ) {{
+#                     id
+#                 }}
+#             }}
+#             """
+#         }
+#         item_res = requests.post(MONDAY_API_URL, headers=headers, json=create_item_query)
+#         item_data = item_res.json()
+#         print("Item dataaaa",item_data)
+#         item_id = item_data["data"]["create_item"]["id"]
+#         print("Item Id",item_id)
+        
+#         #To query subitem board id
+
+#         query = {
+#             "query": f"""
+#             query {{
+#             boards(ids: {master_table_board_id}) {{
+#                 columns(ids: "{subitem_column_id}") {{
+#                 settings_str
+#                 }}
+#             }}
+#             }}
+#             """
+#         }
+
+#         response = requests.post(MONDAY_API_URL, headers=headers, json=query)
+#         data = response.json()
+
+#         try:
+#             settings_str = data["data"]["boards"][0]["columns"][0]["settings_str"]
+#             settings = json.loads(settings_str)
+#             subitem_board_id = settings["boardIds"][0]
+#             print("Subitem board ID:", subitem_board_id)
+#         except Exception as e:
+#             print("Error extracting subitem board ID:", str(e))
+#             subitem_board_id = None
+
+#     #To get Column Titles from Subitem Board
+#         get_columns_query = {
+#             "query": f"""
+#             query {{
+#                 boards(ids: {subitem_board_id}) {{
+#                     columns {{
+#                         id
+#                         title
+#                         type
+#                     }}
+#                 }}
+#             }}
+#             """
+#         }
+#         columns_response = requests.post(MONDAY_API_URL, headers=headers, json=get_columns_query)
+#         columns_data = columns_response.json()
+#         columns_list = columns_data['data']['boards'][0]['columns']
+#         print("Columns Data",columns_data)
+#         print("Column List",columns_list)
+
+#         # Step 5: Map "Order Number" to its column ID
+#         subitem_order_col_id = None
+#         is_visible_col_id = None
+#         for col in columns_list:
+#             title = col['title'].strip().lower()
+#             if title == "order number":
+#                 subitem_order_col_id = col['id']
+#                 print("Order Number Column ID:", subitem_order_col_id)
+#             elif title == "isvisible":
+#                 is_visible_col_id = col['id']
+#                 print("IsVisible Column ID:", is_visible_col_id)
+    
+#     # If both are found, no need to continue loop
+#             if subitem_order_col_id and is_visible_col_id:
+#                 break
+
+#         if not subitem_order_col_id:
+#             return jsonify({"success": False, "error": "Order Number column not found in subitem board!"})
+      
+#         for idx, col in enumerate(columns):
+#             subitem_name = col["title"]
+#             col_order = idx + 1  # or col.get("order")
+
+#             column_values_dict = {
+#                 subitem_order_col_id: str(col_order),
+#                 is_visible_col_id: {"checked": "true"}
+#             }
+#             column_values_str = json.dumps(column_values_dict).replace('"', '\\"')
+#             print("Column Values Dict",column_values_dict)
+#             print("Column values Str",column_values_str)
+        
+#         #Create Subitems
+#             subitem_query = {
+#                 "query": f"""
+#                 mutation {{
+#                     create_subitem(
+#                         parent_item_id: {item_id},
+#                         item_name: "{subitem_name}",
+#                         column_values: "{column_values_str}"
+#                     ) {{
+#                         id
+#                     }}
+#                 }}
+#                 """
+#             }
+
+#             subitem_res = requests.post(MONDAY_API_URL, headers=headers, json=subitem_query)
+#             print("Subitem response:", subitem_res.json())
+
+
+
+
+#     return jsonify({"success": True})
+
+
+
+
+
+
+@app.route("/create_section", methods=["POST"])
+def create_section():
+    master_table_board_id = os.getenv("MASTER_BOARD_ID")
+    data = request.json
+    board_id = data.get("board_id")
+    sections = data.get("sections", [])
+
+    if not board_id or not sections:
+        return jsonify({"success": False, "error": "Missing board_id or sections"})
+
+    # Get board name from ID
+    board_name_query = {
+        "query": f"""query {{ boards(ids: {board_id}) {{ name }} }}"""
+    }
+    board_res = requests.post(MONDAY_API_URL, headers=headers, json=board_name_query)
+    board_name = board_res.json()["data"]["boards"][0]["name"]
+
+    # Get columns + items from master table
+    column_query = {
+        "query": f"""query {{
+            boards(ids: {master_table_board_id}) {{
+                columns {{ id title }}
+                items_page(limit: 500) {{
+                    items {{
+                        id
+                        name
+                        column_values {{ id text value column {{ title }} }}
+                        subitems {{ id }}
+                    }}
+                }}
+            }}
+        }}"""
+    }
+    col_res = requests.post(MONDAY_API_URL, headers=headers, json=column_query)
+    board_data = col_res.json()["data"]["boards"][0]
+    column_map = {col["title"].lower(): col["id"] for col in board_data["columns"]}
     section_name_col_id = column_map.get("section name")
     order_number_col_id = column_map.get("order number")
     subitem_column_id = column_map.get("subitems")
-    print("Subitem Column id",subitem_column_id)
 
     if not section_name_col_id or not order_number_col_id:
-        return jsonify({"success": False, "error": "Column IDs not found in Master Table"})
-    
+        return jsonify({"success": False, "error": "Column IDs not found"})
 
-    # Step 2.5: Get the name of the board by board_id
-    board_name_query = {
-        "query": f"""
-        query {{
-            boards(ids: {board_id}) {{
-                name
+    existing_items = board_data["items_page"]["items"]
+
+    # Get subitem board ID
+    settings_query = {
+        "query": f"""query {{
+            boards(ids: {master_table_board_id}) {{
+                columns(ids: "{subitem_column_id}") {{
+                    settings_str
+                }}
             }}
-        }}
-        """
+        }}"""
     }
+    settings_res = requests.post(MONDAY_API_URL, headers=headers, json=settings_query)
+    settings_str = settings_res.json()["data"]["boards"][0]["columns"][0]["settings_str"]
+    subitem_board_id = json.loads(settings_str)["boardIds"][0]
 
-    board_res = requests.post(MONDAY_API_URL, headers=headers, json=board_name_query)
-    board_name = board_res.json()["data"]["boards"][0]["name"]
-    print("board_ndvdfvdfvdfvdfame",board_name)
+    # Get subitem board columns
+    get_columns_query = {
+        "query": f"""query {{
+            boards(ids: {subitem_board_id}) {{
+                columns {{ id title }}
+            }}
+        }}"""
+    }
+    sub_col_res = requests.post(MONDAY_API_URL, headers=headers, json=get_columns_query)
+    sub_cols = sub_col_res.json()["data"]["boards"][0]["columns"]
+    sub_col_map = {col["title"].strip().lower(): col["id"] for col in sub_cols}
+    subitem_order_col_id = sub_col_map.get("order number")
+    is_visible_col_id = sub_col_map.get("isvisible")
+
+    if not subitem_order_col_id or not is_visible_col_id:
+        return jsonify({"success": False, "error": "Subitem board columns not found"})
 
     for section in sections:
         section_name = section["section_name"]
+        original_section_name = section.get("original_section_name", section_name)
         order_number = section["order_number"]
         columns = section.get("columns", [])
 
-        # Prepare column_values as JSON string
+        # Match by original section name (for rename detection)
+        matched_item = None
+        for item in existing_items:
+            if item["name"] != board_name:
+                continue
+            for col in item["column_values"]:
+                if col["column"]["title"].lower() == "section name" and col["text"] == original_section_name:
+                    matched_item = item
+                    break
+            if matched_item:
+                break
+
         column_values_dict = {
             section_name_col_id: section_name,
             order_number_col_id: str(order_number)
         }
-        column_values_str = json.dumps(column_values_dict)  # Properly escaped for GraphQL
-        escaped_column_values_str = column_values_str.replace('"', '\\"')
-        # column_values: "{column_values_str.replace('"', '\\"')}"
+        column_values_str = json.dumps(column_values_dict).replace('"', '\\"')
 
-        # Create item in Master Table
-        create_item_query = {
-            "query": f"""
-            mutation {{
-                create_item(
-                    board_id: {master_table_board_id},
-                    item_name: "{board_name}",
-                    
-                    column_values: "{escaped_column_values_str}"
-                ) {{
-                    id
-                }}
-            }}
-            """
-        }
-        item_res = requests.post(MONDAY_API_URL, headers=headers, json=create_item_query)
-        item_data = item_res.json()
-        print("Item dataaaa",item_data)
-        item_id = item_data["data"]["create_item"]["id"]
-        print("Item Id",item_id)
-
-        query = {
-            "query": f"""
-            query {{
-            boards(ids: {master_table_board_id}) {{
-                columns(ids: "{subitem_column_id}") {{
-                settings_str
-                }}
-            }}
-            }}
-            """
-        }
-
-        response = requests.post(MONDAY_API_URL, headers=headers, json=query)
-        data = response.json()
-
-        try:
-            settings_str = data["data"]["boards"][0]["columns"][0]["settings_str"]
-            settings = json.loads(settings_str)
-            subitem_board_id = settings["boardIds"][0]
-            print("Subitem board ID:", subitem_board_id)
-        except Exception as e:
-            print("Error extracting subitem board ID:", str(e))
-            subitem_board_id = None
-
-    #To get Column Titles from Subitem Board
-        get_columns_query = {
-            "query": f"""
-            query {{
-                boards(ids: {subitem_board_id}) {{
-                    columns {{
-                        id
-                        title
-                        type
-                    }}
-                }}
-            }}
-            """
-        }
-        columns_response = requests.post(MONDAY_API_URL, headers=headers, json=get_columns_query)
-        columns_data = columns_response.json()
-        columns_list = columns_data['data']['boards'][0]['columns']
-        print("Columns Data",columns_data)
-        print("Column List",columns_list)
-
-        # Step 5: Map "Order Number" to its column ID
-        subitem_order_col_id = None
-        for col in columns_list:
-            if col['title'].strip().lower() == "order number":
-                subitem_order_col_id = col['id']
-                print(subitem_order_col_id)
-                break
-
-        if not subitem_order_col_id:
-            return jsonify({"success": False, "error": "Order Number column not found in subitem board!"})
-      
-        for idx, col in enumerate(columns):
-            subitem_name = col["title"]
-            col_order = idx + 1  # or col.get("order")
-
-            column_values_dict = {
-                subitem_order_col_id: str(col_order)
-            }
-            column_values_str = json.dumps(column_values_dict).replace('"', '\\"')
-
-            subitem_query = {
+        if matched_item:
+            # Update item name/columns
+            item_id = matched_item["id"]
+            update_query = {
                 "query": f"""
                 mutation {{
-                    create_subitem(
-                        parent_item_id: {item_id},
-                        item_name: "{subitem_name}",
+                    change_multiple_column_values(
+                        board_id: {master_table_board_id},
+                        item_id: {item_id},
                         column_values: "{column_values_str}"
                     ) {{
                         id
@@ -264,14 +579,74 @@ def create_section():
                 }}
                 """
             }
+            update_res = requests.post(MONDAY_API_URL, headers=headers, json=update_query)
+            print("Updated item:", update_res.json())
 
-            subitem_res = requests.post(MONDAY_API_URL, headers=headers, json=subitem_query)
-            print("Subitem response:", subitem_res.json())
+            # Delete subitems to refresh config
+            for sub in matched_item.get("subitems", []):
+                del_query = {
+                    "query": f"""mutation {{ delete_item(item_id: {sub['id']}) {{ id }} }}"""
+                }
+                del_res = requests.post(MONDAY_API_URL, headers=headers, json=del_query)
+                print("Deleted subitem:", del_res.json())
 
+        else:
+            # Create new section
+            create_query = {
+                "query": f"""
+                mutation {{
+                    create_item(
+                        board_id: {master_table_board_id},
+                        item_name: "{board_name}",
+                        column_values: "{column_values_str}"
+                    ) {{
+                        id
+                    }}
+                }}
+                """
+            }
+            create_res = requests.post(MONDAY_API_URL, headers=headers, json=create_query)
+            item_id = create_res.json()["data"]["create_item"]["id"]
+            print("Created item ID:", item_id)
 
+        # Create new subitems
+        for idx, col in enumerate(columns):
+            subitem_name = col["title"]
+            col_order = idx + 1
+            sub_column_values = {
+                subitem_order_col_id: str(col_order),
+                is_visible_col_id: {"checked": "true"}
+            }
+            sub_col_str = json.dumps(sub_column_values).replace('"', '\\"')
 
+            sub_query = {
+                "query": f"""
+                mutation {{
+                    create_subitem(
+                        parent_item_id: {item_id},
+                        item_name: "{subitem_name}",
+                        column_values: "{sub_col_str}"
+                    ) {{
+                        id
+                    }}
+                }}
+                """
+            }
+            sub_res = requests.post(MONDAY_API_URL, headers=headers, json=sub_query)
+            print("Created subitem:", sub_res.json())
 
     return jsonify({"success": True})
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1660,7 +2035,3 @@ if __name__ == "__main__":
 #     sections_sorted = sorted(sections, key=lambda s: s["order"])
 
 #     return jsonify({"sections": sections_sorted})
-
-    
-
-

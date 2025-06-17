@@ -1,32 +1,5 @@
 <!-- <!DOCTYPE html>
 <html>
-<head>
-    <title>Board View - Workspace Selector</title>
-</head>
-<body>
-    <h2>Select Workspace</h2>
-    <label for="workspaceDropdown">Workspace:</label>
-    <select id="workspaceDropdown">
-    <option value="">None</option>
-    </select>
-     
-    <h2>Select Board</h2>
-    <label for="boardDropdown">Boards:</label>
-    <select id="boardDropdown">
-    <option value="">None</option>
-    </select>
-
-
-    <!-- ✅ JS must be at the end -->
-    <!-- <script src="{{ url_for('static', filename='configurator.js') }}"></script>
-</body>
-</html> -->
-
- -->
-
-
- <!DOCTYPE html>
-<html>
     <head>
         <title>Board View - Workspace Selector</title>
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -87,5 +60,141 @@
     <div id="sectionsContainer"></div>
 
     <script src="{{ url_for('static', filename='configurator.js') }}"></script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Board View - Workspace Selector</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f7fa;
+    }
+
+    h2, h3 {
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    select, input[type="text"] {
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #0073ea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #005ecb;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 5px;
+      background-color: #e0e0e0;
+      border-radius: 20px;
+      cursor: move;
+      font-size: 13px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section {
+      border: 2px dashed #ccc;
+      padding: 10px;
+      min-height: 60px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background-color: #ffffff;
+      border-radius: 8px;
+    }
+
+    .section-card {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .section-title-input {
+      font-size: 16px;
+      font-weight: bold;
+      width: 100%;
+      border: none;
+      background-color: transparent;
+      margin-bottom: 10px;
+    }
+
+    #columnsContainer {
+      background: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      min-height: 60px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    #saveAllBtn {
+      display: block;
+      width: fit-content;
+      margin: 30px auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Select Workspace</h2>
+  <label for="workspaceDropdown">Workspace:</label>
+  <select id="workspaceDropdown">
+    <option value="">None</option>
+  </select>
+
+  <h2>Select Board</h2>
+  <label for="boardDropdown">Board:</label>
+  <select id="boardDropdown">
+    <option value="">None</option>
+  </select>
+
+  <button id="loadColumnsBtn">Load Columns</button>
+  
+
+ <h3>Available Columns</h3>
+  <div id="columnsContainer"></div>
+
+  <h3>Create a Section</h3>
+  <input type="text" id="sectionNameInput" placeholder="Section Name">
+  <button id="createSectionBtn">Create Section</button>
+
+  <div id="sectionsContainer"></div>
+  <!-- <button id="saveAllBtn">Save</button> -->
+
+  <script src="{{ url_for('static', filename='configurator.js') }}"></script>
 </body>
 </html>
