@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sales Insight Summary</title>
   <style>
-    /* Global reset & basic typography */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: "Segoe UI", Roboto, sans-serif;
@@ -20,11 +19,18 @@
       margin-bottom: 1rem;
       text-align: center;
     }
-    /* Grid for cards; single column by default, 3-column on wide screens */
+    h2 {
+      font-size: 1.5rem;
+      color: #457b9d;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 0.5rem;
+    }
     .cards {
       display: grid;
       grid-gap: 1.5rem;
-      margin-top: 1.5rem;
+      margin-top: 1rem;
     }
     @media (min-width: 768px) {
       .cards { grid-template-columns: repeat(3, 1fr); }
@@ -37,9 +43,9 @@
       display: flex;
       flex-direction: column;
     }
-    .card h2 {
+    .card h3 {
       margin-bottom: 1rem;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       color: #264653;
       border-bottom: 2px solid #e9ecef;
       padding-bottom: 0.5rem;
@@ -54,7 +60,6 @@
       margin-bottom: 0.6rem;
       font-size: 0.975rem;
     }
-    /* Custom bullet icons using CSS ::before */
     .card li::before {
       content: "✔";
       position: absolute;
@@ -62,7 +67,6 @@
       color: #2a9d8f;
       font-weight: bold;
     }
-    /* Subtle highlighting for region names and key terms */
     .highlight {
       font-weight: bold;
       color: #1e76bd;
@@ -70,38 +74,76 @@
   </style>
 </head>
 <body>
-  <h1>📈 Regional Sales Insight</h1>
+  <h1>📊 Regional Sales Insight Summary</h1>
+
+  <!-- Asia-Pacific Section -->
+  <h2>🌏 Asia-Pacific Insights</h2>
   <section class="cards">
-  
+
     <article class="card">
-      <h2>Top‑Growing Regions</h2>
+      <h3>Top‑Growing Regions</h3>
+      <ul>
+        <li><span class="highlight">India</span> ↑ 25% due to high repeat-buy rates (NPS ≥ 9).</li>
+        <li><span class="highlight">Japan</span> ↑ 20% due to high repeat-buy rates (NPS ≥ 9).</li>
+        <li><span class="highlight">South Korea</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
+      </ul>
+    </article>
+
+    <article class="card">
+      <h3>Key Drivers & Models</h3>
+      <ul>
+        <li><span class="highlight">India</span> ↑ 25% due to strong online sales channel uptake. Model/technique: Predictive lead scoring to identify high-value customers.</li>
+        <li><span class="highlight">Japan</span> ↑ 20% due to effective discounting patterns on bundled products. Model/technique: Bundle recommendation engine to optimize sales.</li>
+        <li><span class="highlight">South Korea</span> ↑ 15% due to positive feedback on product quality. Model/technique: Sentiment analysis to enhance customer engagement strategies.</li>
+      </ul>
+    </article>
+
+    <article class="card">
+      <h3>Actionable Strategies</h3>
+      <ul>
+        <li>Deploy successful bundles in regions with flat performance to boost sales. Model: Cluster-based pricing to tailor offers.</li>
+        <li>Revise channel mix to focus on high-performing online sales in slower regions. Model: Automated segmentation by uptake to identify opportunities.</li>
+        <li>Implement feedback-triggered follow-ups to improve customer satisfaction. Model: Churn propensity modeling to retain customers.</li>
+        <li>Prioritize upsell bundles based on customer feedback trends. Model: Prescriptive action models to guide sales strategies.</li>
+        <li>Enhance product quality assurance processes to reduce negative feedback. Model: Predictive analytics to foresee potential issues before they arise.</li>
+      </ul>
+    </article>
+
+  </section>
+
+  <!-- Europe Section -->
+  <h2>🌍 Europe Insights</h2>
+  <section class="cards">
+
+    <article class="card">
+      <h3>Top‑Growing Regions</h3>
       <ul>
         <li><span class="highlight">Germany</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
         <li><span class="highlight">France</span> ↑ 12% due to consistent customer feedback (NPS ≥ 9).</li>
-        <li><span class="highlight">USA</span> ↑ 10% due to strong sales channel performance (NPS ≥ 9).</li>
+        <li><span class="highlight">UK</span> ↑ 9% due to improved service quality (NPS ≥ 9).</li>
       </ul>
     </article>
-    
+
     <article class="card">
-      <h2>Key Drivers & Models</h2>
+      <h3>Key Drivers & Models</h3>
       <ul>
-        <li><span class="highlight">Germany</span> ↑ 15% due to upsell of monitors & warranties. Model/technique: Bundle recommendation engine.</li>
-        <li><span class="highlight">France</span> ↑ 12% due to high‑performing online channel. Model/technique: Predictive lead scoring for web engagement.</li>
-        <li><span class="highlight">USA</span> ↑ 10% due to effective discounting strategies. Model/technique: Churn/upsell propensity modeling.</li>
+        <li><span class="highlight">Germany</span> ↑ 15% due to upsell of monitors & warranties. Model/technique: Bundle recommendation engine.</li>
+        <li><span class="highlight">France</span> ↑ 12% due to high-performing online channel. Model/technique: Predictive lead scoring for web engagement.</li>
+        <li><span class="highlight">UK</span> ↑ 9% due to improved feedback loop. Model/technique: Sentiment-based feedback analysis.</li>
       </ul>
     </article>
-    
+
     <article class="card">
-      <h2>Actionable Strategies for Other Regions</h2>
+      <h3>Actionable Strategies</h3>
       <ul>
-        <li>Deploy successful bundles in slower markets. Model: Bundle recommendation engine.</li>
-        <li>Revise channel mix: shift focus to high‑conversion online sales. Model: Cluster-based pricing analysis.</li>
-        <li>Implement feedback‑triggered follow‑ups. Model: Sentiment‑based outreach workflows.</li>
-        <li>Prioritize upsell bundles based on feedback trends. Model: Predictive analytics for upsell.</li>
+        <li>Deploy successful bundles in slower markets. Model: Bundle recommendation engine.</li>
+        <li>Revise channel mix: shift focus to high-conversion online sales. Model: Cluster-based pricing analysis.</li>
+        <li>Implement feedback-triggered follow-ups. Model: Sentiment-based outreach workflows.</li>
+        <li>Prioritize upsell bundles based on feedback trends. Model: Predictive analytics for upsell.</li>
         <li>Enhance discount strategy using dynamic pricing models for competitive positioning.</li>
       </ul>
     </article>
-  
+
   </section>
 </body>
 </html>
