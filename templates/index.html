@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sales Insight Summary</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -71,15 +72,20 @@
       font-weight: bold;
       color: #1e76bd;
     }
+    canvas {
+      max-width: 100%;
+      height: auto;
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
   <h1>📊 Regional Sales Insight Summary</h1>
 
-  <!-- Asia-Pacific Section -->
+  <!-- 🌏 ASIA-PACIFIC INSIGHTS -->
   <h2>🌏 Asia-Pacific Insights</h2>
   <section class="cards">
-
+    <!-- Insight Cards -->
     <article class="card">
       <h3>Top‑Growing Regions</h3>
       <ul>
@@ -88,7 +94,6 @@
         <li><span class="highlight">South Korea</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
       </ul>
     </article>
-
     <article class="card">
       <h3>Key Drivers & Models</h3>
       <ul>
@@ -97,7 +102,6 @@
         <li><span class="highlight">South Korea</span> ↑ 15% due to positive feedback on product quality. Model/technique: Sentiment analysis to enhance customer engagement strategies.</li>
       </ul>
     </article>
-
     <article class="card">
       <h3>Actionable Strategies</h3>
       <ul>
@@ -108,13 +112,25 @@
         <li>Enhance product quality assurance processes to reduce negative feedback. Model: Predictive analytics to foresee potential issues before they arise.</li>
       </ul>
     </article>
-
+    <!-- Charts -->
+    <article class="card">
+      <h3>Age Group Purchases</h3>
+      <canvas id="asiaAgeChart"></canvas>
+    </article>
+    <article class="card">
+      <h3>Area Type Purchases</h3>
+      <canvas id="asiaAreaChart"></canvas>
+    </article>
+    <article class="card">
+      <h3>Satisfactory Score</h3>
+      <canvas id="asiaSatisfactionChart"></canvas>
+    </article>
   </section>
 
-  <!-- Europe Section -->
+  <!-- 🌍 EUROPE INSIGHTS -->
   <h2>🌍 Europe Insights</h2>
   <section class="cards">
-
+    <!-- Insight Cards -->
     <article class="card">
       <h3>Top‑Growing Regions</h3>
       <ul>
@@ -123,7 +139,6 @@
         <li><span class="highlight">UK</span> ↑ 9% due to improved service quality (NPS ≥ 9).</li>
       </ul>
     </article>
-
     <article class="card">
       <h3>Key Drivers & Models</h3>
       <ul>
@@ -132,7 +147,6 @@
         <li><span class="highlight">UK</span> ↑ 9% due to improved feedback loop. Model/technique: Sentiment-based feedback analysis.</li>
       </ul>
     </article>
-
     <article class="card">
       <h3>Actionable Strategies</h3>
       <ul>
@@ -143,7 +157,94 @@
         <li>Enhance discount strategy using dynamic pricing models for competitive positioning.</li>
       </ul>
     </article>
-
+    <!-- Charts -->
+    <article class="card">
+      <h3>Age Group Purchases</h3>
+      <canvas id="europeAgeChart"></canvas>
+    </article>
+    <article class="card">
+      <h3>Area Type Purchases</h3>
+      <canvas id="europeAreaChart"></canvas>
+    </article>
+    <article class="card">
+      <h3>Satisfactory Score</h3>
+      <canvas id="europeSatisfactionChart"></canvas>
+    </article>
   </section>
+
+  <!-- Chart Scripts -->
+  <script>
+    // Asia-Pacific Charts
+    new Chart(document.getElementById('asiaAgeChart'), {
+      type: 'bar',
+      data: {
+        labels: ["18–24", "25–34", "35–44", "45–54", "55+"],
+        datasets: [{
+          label: "Purchases",
+          data: [5, 12, 15, 14, 10],
+          backgroundColor: "#2a9d8f"
+        }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('asiaAreaChart'), {
+      type: 'pie',
+      data: {
+        labels: ["Urban", "Downtown", "Rural"],
+        datasets: [{
+          data: [35, 30, 25],
+          backgroundColor: ["#264653", "#2a9d8f", "#e76f51"]
+        }]
+      }
+    });
+
+    new Chart(document.getElementById('asiaSatisfactionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["Best", "Good", "Bad"],
+        datasets: [{
+          data: [10, 20, 15],
+          backgroundColor: ["#2a9d8f", "#e9c46a", "#e76f51"]
+        }]
+      }
+    });
+
+    // Europe Charts
+    new Chart(document.getElementById('europeAgeChart'), {
+      type: 'bar',
+      data: {
+        labels: ["18–24", "25–34", "35–44", "45–54", "55+"],
+        datasets: [{
+          label: "Purchases",
+          data: [8, 36, 34, 22, 10],
+          backgroundColor: "#457b9d"
+        }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('europeAreaChart'), {
+      type: 'pie',
+      data: {
+        labels: ["Urban", "Downtown", "Rural"],
+        datasets: [{
+          data: [66, 0, 0],
+          backgroundColor: ["#1d3557", "#a8dadc", "#f4a261"]
+        }]
+      }
+    });
+
+    new Chart(document.getElementById('europeSatisfactionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["Best", "Good", "Bad"],
+        datasets: [{
+          data: [21, 35, 14],
+          backgroundColor: ["#2a9d8f", "#e9c46a", "#e76f51"]
+        }]
+      }
+    });
+  </script>
 </body>
 </html>
