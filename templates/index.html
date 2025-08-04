@@ -68,6 +68,10 @@
       color: #2a9d8f;
       font-weight: bold;
     }
+    .negative ul li::before {
+      content: "✖";
+      color: #e63946;
+    }
     .highlight {
       font-weight: bold;
       color: #1e76bd;
@@ -100,6 +104,14 @@
         <li><span class="highlight">India</span> ↑ 25% due to strong online sales channel uptake. Model/technique: Predictive lead scoring to identify high-value customers.</li>
         <li><span class="highlight">Japan</span> ↑ 20% due to effective discounting patterns on bundled products. Model/technique: Bundle recommendation engine to optimize sales.</li>
         <li><span class="highlight">South Korea</span> ↑ 15% due to positive feedback on product quality. Model/technique: Sentiment analysis to enhance customer engagement strategies.</li>
+      </ul>
+    </article>
+    <article class="card negative">
+      <h3>Negative Items</h3>
+      <ul>
+        <li>Lower sales conversion in slower-migrating rural areas despite increased outreach and channel presence.</li>
+        <li>Churn risk remains higher in certain segments due to rising competition and loyalty program gaps.</li>
+        <li>Operational delays reported in cross-border supply logistics during peak seasons, raising fulfillment costs.</li>
       </ul>
     </article>
     <article class="card">
@@ -147,6 +159,14 @@
         <li><span class="highlight">UK</span> ↑ 9% due to improved feedback loop. Model/technique: Sentiment-based feedback analysis.</li>
       </ul>
     </article>
+    <article class="card negative">
+      <h3>Negative Items</h3>
+      <ul>
+        <li>Online price wars reduced margins, especially in discount-focused segments.</li>
+        <li>Regulatory complexity increased operational costs for cross-border e-commerce fulfillment in the EU and UK.</li>
+        <li>Post-sale survey NPS shows continued pain points in warranty and return processes, despite some improvement.</li>
+      </ul>
+    </article>
     <article class="card">
       <h3>Actionable Strategies</h3>
       <ul>
@@ -169,6 +189,60 @@
     <article class="card">
       <h3>Satisfactory Score</h3>
       <canvas id="europeSatisfactionChart"></canvas>
+    </article>
+  </section>
+
+  <!-- 🌏 OCEANIA INSIGHTS -->
+  <h2>🌏 Oceania Insights</h2>
+  <section class="cards">
+    <!-- Insight Cards -->
+    <article class="card">
+      <h3>Top‑Growing Regions</h3>
+      <ul>
+        <li><span class="highlight">Australia</span> ↑ 25% due to high repeat-buy rates (NPS ≥ 9).</li>
+        <li><span class="highlight">Singapore</span> ↑ 20% due to high repeat-buy rates (NPS ≥ 9).</li>
+        <li><span class="highlight">New Zealand</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h3>Key Drivers & Models</h3>
+      <ul>
+        <li><span class="highlight">Australia</span> ↑ 25% due to surge in first-time and repeat online shoppers during and after COVID-19 lockdowns. Model: Digital experience optimization and predictive lead scoring.</li>
+        <li><span class="highlight">Singapore</span> ↑ 20% due to strong digital infrastructure supporting seamless online buying. Model: Recommendation engines for upsell/cross-sell.</li>
+        <li><span class="highlight">New Zealand</span> ↑ 15% driven by effective customer loyalty and referral programs. Model: Automated segmentation and feedback mining for retention.</li>
+      </ul>
+    </article>
+    <article class="card negative">
+      <h3>Negative Items</h3>
+      <ul>
+        <li>Shipping cost increases and customs/duties complexity continue to be the main friction for cross-border e-commerce.</li>
+        <li>Price sensitivity heightened amid inflation and rising living costs, resulting in cart abandonment especially for non-essential goods.</li>
+        <li>Rural and remote delivery networks still lag urban areas, making fulfillment slower and less reliable for some customers.</li>
+        <li>Biosecurity and import standards increase supply chain risk and inventory lags (notably in New Zealand and Australia).</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h3>Actionable Strategies</h3>
+      <ul>
+        <li>Accelerate last-mile delivery partnerships and invest in local fulfillment centers, particularly for rural coverage.</li>
+        <li>Enhance transparent pricing at checkout to reduce abandoned carts and improve trust (especially with duties/taxes clarified).</li>
+        <li>Promote subscription/loyalty models to stabilize revenue and boost repeat purchases during economic uncertainty.</li>
+        <li>Broaden organic and health-oriented product selections in response to rising demand for eco-friendly, sustainable goods.</li>
+        <li>Leverage customer data analytics to optimize omnichannel engagement and retention programs.</li>
+      </ul>
+    </article>
+    <!-- Example placeholder charts for Oceania -->
+    <article class="card">
+      <h3>Age Group Purchases</h3>
+      <canvas id="oceaniaAgeChart"></canvas>
+    </article>
+    <article class="card">
+      <h3>Area Type Purchases</h3>
+      <canvas id="oceaniaAreaChart"></canvas>
+    </article>
+    <article class="card">
+      <h3>Satisfactory Score</h3>
+      <canvas id="oceaniaSatisfactionChart"></canvas>
     </article>
   </section>
 
@@ -242,6 +316,42 @@
         datasets: [{
           data: [21, 35, 14],
           backgroundColor: ["#2a9d8f", "#e9c46a", "#e76f51"]
+        }]
+      }
+    });
+
+    // Oceania Charts (placeholder data, update as needed)
+    new Chart(document.getElementById('oceaniaAgeChart'), {
+      type: 'bar',
+      data: {
+        labels: ["18–24", "25–34", "35–44", "45–54", "55+"],
+        datasets: [{
+          label: "Purchases",
+          data: [7, 18, 17, 12, 6],
+          backgroundColor: "#219ebc"
+        }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('oceaniaAreaChart'), {
+      type: 'pie',
+      data: {
+        labels: ["Urban", "Downtown", "Rural"],
+        datasets: [{
+          data: [40, 28, 18],
+          backgroundColor: ["#023047", "#8ecae6", "#ffb703"]
+        }]
+      }
+    });
+
+    new Chart(document.getElementById('oceaniaSatisfactionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ["Best", "Good", "Bad"],
+        datasets: [{
+          data: [15, 28, 10],
+          backgroundColor: ["#219ebc", "#e9c46a", "#e76f51"]
         }]
       }
     });
