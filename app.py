@@ -27,6 +27,7 @@ def configurator():
 
 @app.route("/get_workspaces")
 def get_workspaces():
+    print('inside get_workspaces',flush=True)
     query = {
         "query": """
         query {
@@ -51,6 +52,7 @@ def get_workspaces():
     
 @app.route("/get_boards/<workspace_id>")
 def get_boards(workspace_id):
+    print('inside get_boards',flush=True)
     query = {
         "query": f"""
         query {{
@@ -74,6 +76,7 @@ def get_boards(workspace_id):
 
 @app.route("/get_columns/<board_id>")
 def get_columns(board_id):
+    print('inside get_columns',flush=True)
     query = {
         "query": f"""
         query {{
@@ -97,6 +100,7 @@ def get_columns(board_id):
 
 @app.route("/get_existing_config")
 def get_existing_config():
+    print('inside get_existing_config',flush=True)
     board_name = request.args.get("board_name")
     print("Board name",board_name)
 
@@ -465,6 +469,7 @@ def get_existing_config():
 
 @app.route("/create_section", methods=["POST"])
 def create_section():
+    print('inside create_section--->',flush=True)
     master_table_board_id = os.getenv("MASTER_BOARD_ID")
     data = request.json
     board_id = data.get("board_id")
@@ -730,6 +735,7 @@ def update_item():
 
 @app.route("/get_column_config", methods=["POST"])
 def get_column_config():
+    print('inside get_column_config',flush=True)
     master_board_id = os.getenv("MASTER_BOARD_ID")
     board_name = request.json.get("board_name")
 
