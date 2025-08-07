@@ -8,6 +8,198 @@ let statusLabels = {};
 // Automatically initialize on page load
 window.addEventListener("DOMContentLoaded", initialize);
 
+
+//this function fetch the data of a board according to region
+async function get_column_data(region, boardId, itemId, columnIds) {
+  console.log('get_column_data for----->',region);
+
+  try {
+    const response = await fetch("/get_columnData", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        board_id: boardId,
+        item_id: itemId,
+        column_ids: columnIds
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log(`Column data received for ${region}:`, data);
+
+    //get the values from a columns 
+    const columnValues = data.column_values;
+    const summaryCol = columnValues.find(c => c.column.title.includes("Insight Summary"));
+    const negativeInsightCol = columnValues.find(c => c.column.title.includes("Negative Insights"));
+    const dataInsightCol = columnValues.find(c => c.column.title.includes("Data Insight"));
+
+    if (summaryCol?.text) {
+      renderTopGrowingRegions(region, summaryCol.text);
+    }
+
+    if (dataInsightCol?.text) {
+      renderChartsFromText(region, dataInsightCol.text);
+    }
+
+    if (negativeInsightCol?.text) {
+      renderNegativeInsights(region, negativeInsightCol.text);
+    }
+
+  } catch (error) {
+    console.error(`Error fetching data for ${region}:`, error);
+  }
+}
+
+//this funtion handles the rendering of top growing regions
+function renderTopGrowingRegions(region, summaryText) {
+  const topList = document.getElementById(`${region}TopGrowingList`);
+  const keyDriversList = document.getElementById(`${region}KeyDriversList`);
+  const actionableList = document.getElementById(`${region}ActionableList`);
+
+  topList.innerHTML = "";
+  keyDriversList.innerHTML = "";
+  actionableList.innerHTML = "";
+
+  const lines = summaryText.split("\n");
+  let section = null;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("1.")) {
+      section = "top";
+      continue;
+    } else if (trimmed.startsWith("2.")) {
+      section = "drivers";
+      continue;
+    } else if (trimmed.startsWith("3.")) {
+      section = "actionable";
+      continue;
+    }
+
+    if (trimmed.startsWith("-")) {
+      const li = document.createElement("li");
+
+      const match = trimmed.match(/- Region:\s*(.*?)\s*↑\s*(.*?)\s*due to(.*)/);
+      if (match) {
+        const regionName = match[1].trim();
+        const growth = match[2].trim();
+        const reason = match[3].trim();
+        li.innerHTML = `<span class="highlight">${regionName}</span> ↑ ${growth} due to ${reason}`;
+      } else {
+        li.textContent = trimmed.replace("- ", "").trim();
+      }
+
+      if (section === "top") {
+        topList.appendChild(li);
+      } else if (section === "drivers") {
+        keyDriversList.appendChild(li);
+      } else if (section === "actionable") {
+        actionableList.appendChild(li);
+      }
+    }
+  }
+}
+
+//this funtion handles the rendering of negative insights
+function renderNegativeInsights(region, text) {
+  const list = document.querySelector(`#${region}NegativeList`);
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const points = text.split("\n").filter(line =>
+    line.trim().startsWith("-") || line.trim().match(/^[••*]/)
+  );
+
+  points.forEach(point => {
+    const li = document.createElement("li");
+    li.textContent = point.replace(/^[-•*]\s*/, "").trim();
+    list.appendChild(li);
+  });
+}
+
+//this funtion parse the json for chart data and pass to the all chart fucntions according to chart type
+function renderChartsFromText(region, text) {
+  const parsedCharts = parseMultiJSON(text);
+
+  parsedCharts.forEach(chart => {
+    if (chart.age_group_purchases) {
+      renderBarChart(`${region}AgeChart`, chart.age_group_purchases);
+    } else if (chart.area_type_purchases) {
+      renderPieChart(`${region}AreaChart`, chart.area_type_purchases);
+    } else if (chart["Satisfactory Score"]) {
+      renderDoughnutChart(`${region}SatisfactionChart`, chart["Satisfactory Score"]);
+    }
+  });
+}
+
+
+//render charts functions
+function renderBarChart(canvasId, dataObj) {
+  const labels = Object.keys(dataObj);
+  const values = Object.values(dataObj);
+
+  new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Value",
+        data: values,
+        backgroundColor: "#2a9d8f"
+      }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+}
+
+function renderPieChart(canvasId, dataObj) {
+  new Chart(document.getElementById(canvasId), {
+    type: 'pie',
+    data: {
+      labels: Object.keys(dataObj),
+      datasets: [{
+        data: Object.values(dataObj),
+        backgroundColor: ["#264653", "#2a9d8f", "#e76f51"]
+      }]
+    }
+  });
+}
+
+function renderDoughnutChart(canvasId, dataObj) {
+  new Chart(document.getElementById(canvasId), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(dataObj),
+      datasets: [{
+        data: Object.values(dataObj),
+        backgroundColor: ["#2a9d8f", "#e9c46a", "#e76f51"]
+      }]
+    }
+  });
+}
+
+
+function parseMultiJSON(raw) {   // Wrap in brackets and separate objects with commas
+  const fixed = "[" + raw.trim().replace(/}\s*{/g, "}, {") + "]";
+  try {
+    return JSON.parse(fixed);
+  } catch (err) {
+    console.error("Could not parse chart data:", err);
+    return [];
+  }
+}
+
+
+
+
 // New: initialize function to set up context and trigger search
 function initialize() {
   monday.get("context").then((res) => {
