@@ -4,87 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sales Insight Summary</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background: #f8f9fa;
-      color: #333;
-      line-height: 1.5;
-      padding: 2rem;
-    }
-    h1 {
-      font-size: 2rem;
-      color: #1d3557;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-    h2 {
-      font-size: 1.5rem;
-      color: #457b9d;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-      border-bottom: 2px solid #dee2e6;
-      padding-bottom: 0.5rem;
-    }
-    .cards {
-      display: grid;
-      grid-gap: 1.5rem;
-      margin-top: 1rem;
-    }
-    @media (min-width: 768px) {
-      .cards { grid-template-columns: repeat(3, 1fr); }
-    }
-    .card {
-      background: #fff;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-    }
-    .card h3 {
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-      color: #264653;
-      border-bottom: 2px solid #e9ecef;
-      padding-bottom: 0.5rem;
-    }
-    .card ul {
-      list-style: none;
-      margin-left: 1rem;
-    }
-    .card li {
-      position: relative;
-      padding-left: 1.5rem;
-      margin-bottom: 0.6rem;
-      font-size: 0.975rem;
-    }
-    .card li::before {
-      content: "✔";
-      position: absolute;
-      left: 0;
-      color: #2a9d8f;
-      font-weight: bold;
-    }
-    .negative ul li::before {
-      content: "✖";
-      color: #e63946;
-    }
-    .highlight {
-      font-weight: bold;
-      color: #1e76bd;
-    }
-    canvas {
-      max-width: 100%;
-      height: auto;
-      margin-top: 1rem;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>\
+  <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+  const columnIds = ['long_text_mktf36f7', 'long_text_mktf4sss', 'long_text_mktgyn6m'];
+
+  get_column_data("asia", 2052884263, 2052855846, columnIds);
+  get_column_data("europe", 2052330963, 2052855842, columnIds);
+  get_column_data("oceania", 2052800885, 2052340888, columnIds);
+});
+</script>
+
+  
   <h1>📊 Regional Sales Insight Summary</h1>
+  
 
   <!-- 🌏 ASIA-PACIFIC INSIGHTS -->
   <h2>🌏 Asia-Pacific Insights</h2>
@@ -92,37 +29,19 @@
     <!-- Insight Cards -->
     <article class="card">
       <h3>Top‑Growing Regions</h3>
-      <ul>
-        <li><span class="highlight">India</span> ↑ 25% due to high repeat-buy rates (NPS ≥ 9).</li>
-        <li><span class="highlight">Japan</span> ↑ 20% due to high repeat-buy rates (NPS ≥ 9).</li>
-        <li><span class="highlight">South Korea</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
-      </ul>
+      <ul id="asiaTopGrowingList"></ul>
     </article>
     <article class="card">
       <h3>Key Drivers & Models</h3>
-      <ul>
-        <li><span class="highlight">India</span> ↑ 25% due to strong online sales channel uptake. Model/technique: Predictive lead scoring to identify high-value customers.</li>
-        <li><span class="highlight">Japan</span> ↑ 20% due to effective discounting patterns on bundled products. Model/technique: Bundle recommendation engine to optimize sales.</li>
-        <li><span class="highlight">South Korea</span> ↑ 15% due to positive feedback on product quality. Model/technique: Sentiment analysis to enhance customer engagement strategies.</li>
-      </ul>
+      <ul id="asiaKeyDriversList"></ul>
     </article>
     <article class="card negative">
       <h3>Negative Items</h3>
-      <ul>
-        <li>Lower sales conversion in slower-migrating rural areas despite increased outreach and channel presence.</li>
-        <li>Churn risk remains higher in certain segments due to rising competition and loyalty program gaps.</li>
-        <li>Operational delays reported in cross-border supply logistics during peak seasons, raising fulfillment costs.</li>
-      </ul>
+      <ul id="asiaNegativeList"></ul>
     </article>
     <article class="card">
       <h3>Actionable Strategies</h3>
-      <ul>
-        <li>Deploy successful bundles in regions with flat performance to boost sales. Model: Cluster-based pricing to tailor offers.</li>
-        <li>Revise channel mix to focus on high-performing online sales in slower regions. Model: Automated segmentation by uptake to identify opportunities.</li>
-        <li>Implement feedback-triggered follow-ups to improve customer satisfaction. Model: Churn propensity modeling to retain customers.</li>
-        <li>Prioritize upsell bundles based on customer feedback trends. Model: Prescriptive action models to guide sales strategies.</li>
-        <li>Enhance product quality assurance processes to reduce negative feedback. Model: Predictive analytics to foresee potential issues before they arise.</li>
-      </ul>
+      <ul id="asiaActionableList"></ul>
     </article>
     <!-- Charts -->
     <article class="card">
@@ -145,37 +64,19 @@
     <!-- Insight Cards -->
     <article class="card">
       <h3>Top‑Growing Regions</h3>
-      <ul>
-        <li><span class="highlight">Germany</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
-        <li><span class="highlight">France</span> ↑ 12% due to consistent customer feedback (NPS ≥ 9).</li>
-        <li><span class="highlight">UK</span> ↑ 9% due to improved service quality (NPS ≥ 9).</li>
-      </ul>
+      <ul id="europeTopGrowingList"></ul>
     </article>
     <article class="card">
       <h3>Key Drivers & Models</h3>
-      <ul>
-        <li><span class="highlight">Germany</span> ↑ 15% due to upsell of monitors & warranties. Model/technique: Bundle recommendation engine.</li>
-        <li><span class="highlight">France</span> ↑ 12% due to high-performing online channel. Model/technique: Predictive lead scoring for web engagement.</li>
-        <li><span class="highlight">UK</span> ↑ 9% due to improved feedback loop. Model/technique: Sentiment-based feedback analysis.</li>
-      </ul>
+      <ul id="europeKeyDriversList"></ul>
     </article>
     <article class="card negative">
       <h3>Negative Items</h3>
-      <ul>
-        <li>Online price wars reduced margins, especially in discount-focused segments.</li>
-        <li>Regulatory complexity increased operational costs for cross-border e-commerce fulfillment in the EU and UK.</li>
-        <li>Post-sale survey NPS shows continued pain points in warranty and return processes, despite some improvement.</li>
-      </ul>
+      <ul id="europeNegativeList"></ul>
     </article>
     <article class="card">
       <h3>Actionable Strategies</h3>
-      <ul>
-        <li>Deploy successful bundles in slower markets. Model: Bundle recommendation engine.</li>
-        <li>Revise channel mix: shift focus to high-conversion online sales. Model: Cluster-based pricing analysis.</li>
-        <li>Implement feedback-triggered follow-ups. Model: Sentiment-based outreach workflows.</li>
-        <li>Prioritize upsell bundles based on feedback trends. Model: Predictive analytics for upsell.</li>
-        <li>Enhance discount strategy using dynamic pricing models for competitive positioning.</li>
-      </ul>
+      <ul id="europeActionableList"></ul>
     </article>
     <!-- Charts -->
     <article class="card">
@@ -198,38 +99,19 @@
     <!-- Insight Cards -->
     <article class="card">
       <h3>Top‑Growing Regions</h3>
-      <ul>
-        <li><span class="highlight">Australia</span> ↑ 25% due to high repeat-buy rates (NPS ≥ 9).</li>
-        <li><span class="highlight">Singapore</span> ↑ 20% due to high repeat-buy rates (NPS ≥ 9).</li>
-        <li><span class="highlight">New Zealand</span> ↑ 15% due to high repeat-buy rates (NPS ≥ 9).</li>
-      </ul>
+      <ul id="oceaniaTopGrowingList"></ul>
     </article>
     <article class="card">
       <h3>Key Drivers & Models</h3>
-      <ul>
-        <li><span class="highlight">Australia</span> ↑ 25% due to surge in first-time and repeat online shoppers during and after COVID-19 lockdowns. Model: Digital experience optimization and predictive lead scoring.</li>
-        <li><span class="highlight">Singapore</span> ↑ 20% due to strong digital infrastructure supporting seamless online buying. Model: Recommendation engines for upsell/cross-sell.</li>
-        <li><span class="highlight">New Zealand</span> ↑ 15% driven by effective customer loyalty and referral programs. Model: Automated segmentation and feedback mining for retention.</li>
-      </ul>
+      <ul id="oceaniaKeyDriversList"></ul>
     </article>
     <article class="card negative">
       <h3>Negative Items</h3>
-      <ul>
-        <li>Shipping cost increases and customs/duties complexity continue to be the main friction for cross-border e-commerce.</li>
-        <li>Price sensitivity heightened amid inflation and rising living costs, resulting in cart abandonment especially for non-essential goods.</li>
-        <li>Rural and remote delivery networks still lag urban areas, making fulfillment slower and less reliable for some customers.</li>
-        <li>Biosecurity and import standards increase supply chain risk and inventory lags (notably in New Zealand and Australia).</li>
-      </ul>
+      <ul id="oceaniaNegativeList"></ul>
     </article>
     <article class="card">
-      <h3>Actionable Strategies</h3>
-      <ul>
-        <li>Accelerate last-mile delivery partnerships and invest in local fulfillment centers, particularly for rural coverage.</li>
-        <li>Enhance transparent pricing at checkout to reduce abandoned carts and improve trust (especially with duties/taxes clarified).</li>
-        <li>Promote subscription/loyalty models to stabilize revenue and boost repeat purchases during economic uncertainty.</li>
-        <li>Broaden organic and health-oriented product selections in response to rising demand for eco-friendly, sustainable goods.</li>
-        <li>Leverage customer data analytics to optimize omnichannel engagement and retention programs.</li>
-      </ul>
+       <h3>Actionable Strategies</h3>
+       <ul id="oceaniaActionableList"></ul>
     </article>
     <!-- Example placeholder charts for Oceania -->
     <article class="card">
@@ -246,115 +128,6 @@
     </article>
   </section>
 
-  <!-- Chart Scripts -->
-  <script>
-    // Asia-Pacific Charts
-    new Chart(document.getElementById('asiaAgeChart'), {
-      type: 'bar',
-      data: {
-        labels: ["18–24", "25–34", "35–44", "45–54", "55+"],
-        datasets: [{
-          label: "Purchases",
-          data: [5, 12, 15, 14, 10],
-          backgroundColor: "#2a9d8f"
-        }]
-      },
-      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-    });
-
-    new Chart(document.getElementById('asiaAreaChart'), {
-      type: 'pie',
-      data: {
-        labels: ["Urban", "Downtown", "Rural"],
-        datasets: [{
-          data: [35, 30, 25],
-          backgroundColor: ["#264653", "#2a9d8f", "#e76f51"]
-        }]
-      }
-    });
-
-    new Chart(document.getElementById('asiaSatisfactionChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ["Best", "Good", "Bad"],
-        datasets: [{
-          data: [10, 20, 15],
-          backgroundColor: ["#2a9d8f", "#e9c46a", "#e76f51"]
-        }]
-      }
-    });
-
-    // Europe Charts
-    new Chart(document.getElementById('europeAgeChart'), {
-      type: 'bar',
-      data: {
-        labels: ["18–24", "25–34", "35–44", "45–54", "55+"],
-        datasets: [{
-          label: "Purchases",
-          data: [8, 36, 34, 22, 10],
-          backgroundColor: "#457b9d"
-        }]
-      },
-      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-    });
-
-    new Chart(document.getElementById('europeAreaChart'), {
-      type: 'pie',
-      data: {
-        labels: ["Urban", "Downtown", "Rural"],
-        datasets: [{
-          data: [66, 0, 0],
-          backgroundColor: ["#1d3557", "#a8dadc", "#f4a261"]
-        }]
-      }
-    });
-
-    new Chart(document.getElementById('europeSatisfactionChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ["Best", "Good", "Bad"],
-        datasets: [{
-          data: [21, 35, 14],
-          backgroundColor: ["#2a9d8f", "#e9c46a", "#e76f51"]
-        }]
-      }
-    });
-
-    // Oceania Charts (placeholder data, update as needed)
-    new Chart(document.getElementById('oceaniaAgeChart'), {
-      type: 'bar',
-      data: {
-        labels: ["18–24", "25–34", "35–44", "45–54", "55+"],
-        datasets: [{
-          label: "Purchases",
-          data: [7, 18, 17, 12, 6],
-          backgroundColor: "#219ebc"
-        }]
-      },
-      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-    });
-
-    new Chart(document.getElementById('oceaniaAreaChart'), {
-      type: 'pie',
-      data: {
-        labels: ["Urban", "Downtown", "Rural"],
-        datasets: [{
-          data: [40, 28, 18],
-          backgroundColor: ["#023047", "#8ecae6", "#ffb703"]
-        }]
-      }
-    });
-
-    new Chart(document.getElementById('oceaniaSatisfactionChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ["Best", "Good", "Bad"],
-        datasets: [{
-          data: [15, 28, 10],
-          backgroundColor: ["#219ebc", "#e9c46a", "#e76f51"]
-        }]
-      }
-    });
-  </script>
+  <script src="/static/main.js"></script>
 </body>
 </html>
