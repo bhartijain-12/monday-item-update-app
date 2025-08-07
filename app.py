@@ -25,6 +25,58 @@ def index():
 def configurator():
     return render_template("configurator.html")
 
+# fetching column data from sales insight board
+@app.route("/get_columnData", methods=["POST"])
+def get_column_data():
+    print('MONDAY_API_KEYyyy-->',MONDAY_API_KEY,flush=True)
+
+    data = request.get_json()
+    board_id = data.get("board_id")
+    print('board_id',board_id,flush=True)
+    item_id = data.get("item_id")
+    print('item_id',item_id,flush=True)
+    column_ids = data.get("column_ids", [])
+    print('column_ids',column_ids,flush=True)
+
+    print('inside this get_column_data', flush=True)
+
+    url = "https://api.monday.com/v2"
+    headers = {
+        "Authorization": MONDAY_API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
+
+    query = f"""
+    query {{
+        items(ids: {item_id}) {{
+            name
+            column_values(ids: [{column_id_string}]) {{
+                id
+                text
+                column {{
+                    title 
+                }}
+            }}
+        }}
+    }}
+    """
+
+    response = requests.post(url, headers=headers, json={'query': query})
+    print('resopnse',response,flush=True)
+
+    if response.status_code == 200:
+        data = response.json()
+        print('data- insight--->',data,flush=True)
+        if "errors" in data:
+            print("GraphQL Errors:", data["errors"],flush=True)
+            return jsonify({"error": "GraphQL query failed", "details": data["errors"]}), 500
+        return data["data"]["items"][0]  # Only one item returned
+    else:
+        print(f"Request failed with status {response.status_code}: {response.text}",flush=True)
+        return jsonify({"error": "Request failed", "status": response.status_code}), response.status_code
+
 @app.route("/get_workspaces")
 def get_workspaces():
     print('inside get_workspaces',flush=True)
@@ -255,72 +307,6 @@ def get_existing_config():
     sections.sort(key=lambda x: x["order_number"])
 
     return jsonify(sections)
-
-
-
-board_id = 2052340887
-item_id = 2052340888
-
-def fetch_monday_board_data(board_id, item_id, column_ids=None):
-    print('response0000000 --->',flush=True)
-    url = "https://api.monday.com/v2"
-    headers = {
-        "Authorization": API_KEY,
-        "Content-Type": "application/json"
-    }
-
-    column_ids = column_ids or []
-    print('column ids --->',column_ids,flush=True)
-    column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
-    print('ccolumn_id_string --->',column_id_string,flush=True)
-
-    # query = f"""
-    # query {{
-    #     items(ids: {item_id}) {{
-    #         name
-    #         column_values(ids: {column_id_string}) {{
-    #             id
-    #             text
-    #             }}
-    #             column{{
-    #             title 
-    #         }}
-    #     }}
-    # }}
-    # """
-
-    query = f"""
-    query {{
-        items(ids: {item_id}) {{
-            name
-            column_values(ids: [{column_id_string}]) {{
-                id
-                text
-                column {{
-                    title 
-                }}
-            }}
-        }}
-    }}
-    """
-    
-
-    response = requests.post(url, headers=headers, json={'query': query})
-    print('response0000000 --->',response,flush=True)
-    
-    if response.status_code == 200:
-        data = response.json()
-        print('data- insight--->',data,flush=True)
-        if "errors" in data:
-            print("GraphQL Errors:", data["errors"],flush=True)
-            return None
-        return data["data"]["items"][0]  # Only one item returned
-    else:
-        print(f"Request failed with status {response.status_code}: {response.text}",flush=True)
-        return None
-
-
-
 
 
 
