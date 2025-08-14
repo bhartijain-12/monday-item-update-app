@@ -135,10 +135,9 @@ function renderChartsFromText(region, text) {
     } else if (chart.area_type_purchases) {
       renderPieChart(`${region}AreaChart`, chart.area_type_purchases);
     } else if (chart.satisfactory_score) {
-      renderDoughnutChart(`${region}SatisfactionChart`, chart["Satisfactory Score"]);
-    }
+      renderDoughnutChart(`${region}SatisfactionChart`, chart.satisfactory_score);
     } else if (chart.lead_source_purchases) {
-      renderBarChart(`${region}LeadSourceChart`, chart["Lead Source"]);
+      renderBarChart(`${region}LeadSourceChart`, chart.lead_source_purchases);
     }
   });
 }
