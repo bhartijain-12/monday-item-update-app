@@ -128,7 +128,6 @@ function renderNegativeInsights(region, text) {
 //this funtion parse the json for chart data and pass to the all chart fucntions according to chart type
 function renderChartsFromText(region, text) {
   const parsedCharts = parseMultiJSON(text);
-  print('parsedCharts-->', parsedCharts, flush=true)
   parsedCharts.forEach(chart => {
     if (chart.age_group_purchases) {
       renderBarChart(`${region}AgeChart`, chart.age_group_purchases);
