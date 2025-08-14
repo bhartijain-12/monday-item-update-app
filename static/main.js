@@ -137,7 +137,7 @@ function renderChartsFromText(region, text) {
       renderDoughnutChart(`${region}SatisfactionChart`, chart["Satisfactory Score"]);
     }
     else if (chart["Lead Source"]) {
-      renderDoughnutChart(`${region}LeadSourceChart`, chart["Lead Source"]);
+      renderBarChart(`${region}LeadSourceChart`, chart["Lead Source"]);
     }
   });
 }
