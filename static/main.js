@@ -128,16 +128,17 @@ function renderNegativeInsights(region, text) {
 //this funtion parse the json for chart data and pass to the all chart fucntions according to chart type
 function renderChartsFromText(region, text) {
   const parsedCharts = parseMultiJSON(text);
-
+  print(parsedCharts, flush=true);
   parsedCharts.forEach(chart => {
     if (chart.age_group_purchases) {
       renderBarChart(`${region}AgeChart`, chart.age_group_purchases);
     } else if (chart.area_type_purchases) {
       renderPieChart(`${region}AreaChart`, chart.area_type_purchases);
-    } else if (chart.satisfactory_score) {
-      renderDoughnutChart(`${region}SatisfactionChart`, chart.satisfactory_score);
-    } else if (chart.lead_source_purchases) {
-      renderBarChart(`${region}LeadSourceChart`, chart.lead_source_purchases);
+    } else if (chart["Satisfactory Score"]) {
+      renderDoughnutChart(`${region}SatisfactionChart`, chart["Satisfactory Score"]);
+    }
+    else if (chart["Lead Source"]) {
+      renderDoughnutChart(`${region}LeadSourceChart`, chart["Lead Source"]);
     }
   });
 }
