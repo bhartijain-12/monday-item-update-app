@@ -134,8 +134,11 @@ function renderChartsFromText(region, text) {
       renderBarChart(`${region}AgeChart`, chart.age_group_purchases);
     } else if (chart.area_type_purchases) {
       renderPieChart(`${region}AreaChart`, chart.area_type_purchases);
-    } else if (chart["Satisfactory Score"]) {
+    } else if (chart.satisfactory_score) {
       renderDoughnutChart(`${region}SatisfactionChart`, chart["Satisfactory Score"]);
+    }
+    } else if (chart.lead_source_purchases) {
+      renderBarChart(`${region}LeadSourceChart`, chart["Lead Source"]);
     }
   });
 }
