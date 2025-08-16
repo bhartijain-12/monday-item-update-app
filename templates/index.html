@@ -5,141 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sales Insight Summary</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/monday-sdk-js/dist/main.js"></script>
   <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
 
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-  const columnIds = ['long_text_mktf36f7', 'long_text_mktf4sss', 'long_text_mktgyn6m'];
+    // Column IDs used for: Insight Summary, Negative Insights, Data Insight
+    const columnIds = ['long_text_mktf36f7', 'long_text_mktf4sss', 'long_text_mktgyn6m'];
 
-  get_column_data("asia", 2052884263, 2052855846, columnIds);
-  get_column_data("europe", 2052330963, 2052855842, columnIds);
-  get_column_data("oceania", 2052800885, 2052340888, columnIds);
-});
+    // Call per region (update board & item IDs if different)
+    get_column_data("asia", 2052884263, 2052855846, columnIds);
+    get_column_data("europe", 2052884263, 2052855846, columnIds);
+    get_column_data("oceania", 2052884263, 2052855846, columnIds);
+  });
 </script>
 
-  
-  <h1>📊 Regional Sales Insight Summary</h1>
+<h1>Regional Sales & Insight Dashboard</h1>
 
-   <!-- 🌏 OCEANIA INSIGHTS -->
-  <h2>🌏 Oceania Insights</h2>
-  <section class="cards">
-    <!-- Insight Cards -->
-    <article class="card">
-      <h3>Top‑Growing Regions</h3>
-      <ul id="oceaniaTopGrowingList"></ul>
-    </article>
-    <article class="card">
-      <h3>Key Drivers & Models</h3>
-      <ul id="oceaniaKeyDriversList"></ul>
-    </article>
-    <article class="card negative">
-      <h3>Negative Items</h3>
-      <ul id="oceaniaNegativeList"></ul>
-    </article>
-    <article class="card">
-       <h3>Actionable Strategies</h3>
-       <ul id="oceaniaActionableList"></ul>
-    </article>
-    <!-- Example placeholder charts for Oceania -->
-    <article class="card">
-      <h3>Age Group Purchases</h3>
-      <canvas id="oceaniaAgeChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Area Type Purchases</h3>
-      <canvas id="oceaniaAreaChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Satisfactory Score</h3>
-      <canvas id="oceaniaSatisfactionChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Lead Source</h3>
-      <canvas id="oceaniaLeadSourceChart"></canvas>
-    </article>
-  </section>
+<!-- ASIA -->
+<h2>Asia-Pacific</h2>
+<section class="cards">
+  <article class="card">
+    <h3>Top Growing Regions</h3>
+    <ul id="asiaTopGrowingList"></ul>
+    <h3 style="margin-top: 12px;">Key Drivers</h3>
+    <ul id="asiaKeyDriversList"></ul>
+    <h3 style="margin-top: 12px;">Actionable Strategies</h3>
+    <ul id="asiaActionableList"></ul>
+  </article>
+  <article class="card negative">
+    <h3>Negative Insights</h3>
+    <ul id="asiaNegativeList"></ul>
+  </article>
+  <article class="card">
+    <h3>Product Purchases by Age Group</h3>
+    <canvas id="asiaAgeChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Area Type Purchases</h3>
+    <canvas id="asiaAreaChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Satisfactory Score</h3>
+    <canvas id="asiaSatisfactionChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Lead Source</h3>
+    <canvas id="asiaLeadSourceChart"></canvas>
+  </article>
+</section>
 
-  <!-- 🌍 EUROPE INSIGHTS -->
-  <h2>🌍 Europe Insights</h2>
-  <section class="cards">
-    <!-- Insight Cards -->
-    <article class="card">
-      <h3>Top‑Growing Regions</h3>
-      <ul id="europeTopGrowingList"></ul>
-    </article>
-    <article class="card">
-      <h3>Key Drivers & Models</h3>
-      <ul id="europeKeyDriversList"></ul>
-    </article>
-    <article class="card negative">
-      <h3>Negative Items</h3>
-      <ul id="europeNegativeList"></ul>
-    </article>
-    <article class="card">
-      <h3>Actionable Strategies</h3>
-      <ul id="europeActionableList"></ul>
-    </article>
-    <!-- Charts -->
-    <article class="card">
-      <h3>Age Group Purchases</h3>
-      <canvas id="europeAgeChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Area Type Purchases</h3>
-      <canvas id="europeAreaChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Satisfactory Score</h3>
-      <canvas id="europeSatisfactionChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Lead Source</h3>
-      <canvas id="europeLeadSourceChart"></canvas>
-    </article>
-  </section>
+<!-- EUROPE -->
+<h2>Europe</h2>
+<section class="cards">
+  <article class="card">
+    <h3>Top Growing Regions</h3>
+    <ul id="europeTopGrowingList"></ul>
+    <h3 style="margin-top: 12px;">Key Drivers</h3>
+    <ul id="europeKeyDriversList"></ul>
+    <h3 style="margin-top: 12px;">Actionable Strategies</h3>
+    <ul id="europeActionableList"></ul>
+  </article>
+  <article class="card negative">
+    <h3>Negative Insights</h3>
+    <ul id="europeNegativeList"></ul>
+  </article>
+  <article class="card">
+    <h3>Product Purchases by Age Group</h3>
+    <canvas id="europeAgeChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Area Type Purchases</h3>
+    <canvas id="europeAreaChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Satisfactory Score</h3>
+    <canvas id="europeSatisfactionChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Lead Source</h3>
+    <canvas id="europeLeadSourceChart"></canvas>
+  </article>
+</section>
 
-  <!-- 🌏 ASIA-PACIFIC INSIGHTS -->
-  <h2>🌏 Asia-Pacific Insights</h2>
-  <section class="cards">
-    <!-- Insight Cards -->
-    <article class="card">
-      <h3>Top‑Growing Regions</h3>
-      <ul id="asiaTopGrowingList"></ul>
-    </article>
-    <article class="card">
-      <h3>Key Drivers & Models</h3>
-      <ul id="asiaKeyDriversList"></ul>
-    </article>
-    <article class="card negative">
-      <h3>Negative Items</h3>
-      <ul id="asiaNegativeList"></ul>
-    </article>
-    <article class="card">
-      <h3>Actionable Strategies</h3>
-      <ul id="asiaActionableList"></ul>
-    </article>
-    <!-- Charts -->
-    <article class="card">
-      <h3>Age Group Purchases</h3>
-      <canvas id="asiaAgeChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Area Type Purchases</h3>
-      <canvas id="asiaAreaChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Satisfactory Score</h3>
-      <canvas id="asiaSatisfactionChart"></canvas>
-    </article>
-    <article class="card">
-      <h3>Lead Source</h3>
-      <canvas id="asiaLeadSourceChart"></canvas>
-    </article>
-  </section>
+<!-- OCEANIA -->
+<h2>Oceania</h2>
+<section class="cards">
+  <article class="card">
+    <h3>Top Growing Regions</h3>
+    <ul id="oceaniaTopGrowingList"></ul>
+    <h3 style="margin-top: 12px;">Key Drivers</h3>
+    <ul id="oceaniaKeyDriversList"></ul>
+    <h3 style="margin-top: 12px;">Actionable Strategies</h3>
+    <ul id="oceaniaActionableList"></ul>
+  </article>
+  <article class="card negative">
+    <h3>Negative Insights</h3>
+    <ul id="oceaniaNegativeList"></ul>
+  </article>
+  <article class="card">
+    <h3>Product Purchases by Age Group</h3>
+    <canvas id="oceaniaAgeChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Area Type Purchases</h3>
+    <canvas id="oceaniaAreaChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Satisfactory Score</h3>
+    <canvas id="oceaniaSatisfactionChart"></canvas>
+  </article>
+  <article class="card">
+    <h3>Lead Source</h3>
+    <canvas id="oceaniaLeadSourceChart"></canvas>
+  </article>
+</section>
 
-
-  <script src="/static/main.js"></script>
+<script src="/static/main.js"></script>
 </body>
 </html>
