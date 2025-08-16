@@ -2080,3 +2080,55 @@ if __name__ == "__main__":
 #     sections_sorted = sorted(sections, key=lambda s: s["order"])
 
 #     return jsonify({"sections": sections_sorted})
+
+
+@app.route("/trigger_action", methods=["POST"])
+def trigger_action():
+    try:
+        payload = request.get_json(force=True) or {}
+        action_type = payload.get("type")
+        region = payload.get("region", "Unknown")
+        board_id = payload.get("board_id")
+        item_id = payload.get("item_id")
+        insight_text = payload.get("insight", "")
+
+        # Apology email stub (replace with real email integration as needed)
+        if action_type == "apology_email":
+            # Here you could integrate SendGrid/SMTP etc.
+            message = f"Apology email queued for {region} due to quality issues."
+            return jsonify({"ok": True, "message": message})
+
+        # Coupon generation
+        if action_type == "generate_coupon":
+            import random, string
+            code = "SAVE" + "".join(random.choices(string.digits, k=2)) + "-" + "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            message = f"Coupon generated for {region}: {code}"
+            return jsonify({"ok": True, "message": message, "coupon": code})
+
+        # Create a Monday.com task/case
+        if action_type == "create_task":
+            support_board_id = os.getenv("SUPPORT_BOARD_ID") or board_id
+            if not support_board_id:
+                return jsonify({"ok": False, "message": "No Support board id configured."}), 400
+
+            mutation = {
+                "query": f'''
+                mutation {{
+                  create_item (board_id: {support_board_id}, item_name: "Support Case - {region}", column_values: "{{}}") {{
+                    id
+                  }}
+                }}
+                '''
+            }
+            resp = requests.post(MONDAY_API_URL, headers=headers, json=mutation)
+            if resp.status_code == 200:
+                data = resp.json()
+                if "errors" in data:
+                    return jsonify({"ok": False, "message": "Monday API error", "details": data["errors"]}), 500
+                new_id = data.get("data", {}).get("create_item", {}).get("id")
+                return jsonify({"ok": True, "message": f"Support task created (ID {new_id}) for {region}."})
+            return jsonify({"ok": False, "message": "Failed to reach Monday API"}), 502
+
+        return jsonify({"ok": False, "message": "Invalid action type"}), 400
+    except Exception as e:
+        return jsonify({"ok": False, "message": f"Error: {e}"}), 500
