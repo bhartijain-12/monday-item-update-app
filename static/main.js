@@ -35,7 +35,7 @@ async function get_column_data(region, boardId, itemId, columnIds) {
 
     //get the values from a columns 
     const columnValues = data.column_values;
-    const summaryCol = columnValues.find(c => c.column.title.includes("Insight Summary"));
+    const summaryCol = columnValues.find(c => c.column.title.includes("Insight Summary & Growth"));
     const negativeInsightCol = columnValues.find(c => c.column.title.includes("Negative Insights"));
     const dataInsightCol = columnValues.find(c => c.column.title.includes("Data Insight"));
 
