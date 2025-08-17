@@ -90,3 +90,27 @@
 .action-btn:hover {
   opacity: 0.9;
 }
+
+.card {
+  max-height: 200px;   /* adjust as per your design */
+  overflow-y: auto;    /* enables vertical scrolling */
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* Optional: add custom scrollbar style */
+/* .card::-webkit-scrollbar {
+  width: 6px;
+}
+
+.card::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 6px;
+}
+
+.card::-webkit-scrollbar-thumb:hover {
+  background: #666;
+} */
+
