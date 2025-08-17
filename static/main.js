@@ -35,9 +35,10 @@ async function get_column_data(region, boardId, itemId, columnIds) {
 
     //get the values from a columns 
     const columnValues = data.column_values;
-    const summaryCol = columnValues.find(c => c.column.title.includes("Insight Summary & Growth"));
-    const negativeInsightCol = columnValues.find(c => c.column.title.includes("Negative Insights"));
-    const dataInsightCol = columnValues.find(c => c.column.title.includes("Data Insight"));
+    const summaryCol = columnValues.find(c => c.id === "long_text_mktf36f7");
+    const negativeInsightCol = columnValues.find(c => c.id === "long_text_mktgyn6m");
+    const dataInsightCol = columnValues.find(c => c.id === "long_text_mktf4sss");
+
 
     if (summaryCol?.text) {
       renderTopGrowingRegions(region, summaryCol.text);
@@ -60,11 +61,11 @@ async function get_column_data(region, boardId, itemId, columnIds) {
 function renderTopGrowingRegions(region, summaryText) {
   const topList = document.getElementById(`${region}TopGrowingList`);
   const keyDriversList = document.getElementById(`${region}KeyDriversList`);
-  const actionableList = document.getElementById(`${region}ActionableList`);
+  // const actionableList = document.getElementById(`${region}ActionableList`);
 
   topList.innerHTML = "";
   keyDriversList.innerHTML = "";
-  actionableList.innerHTML = "";
+  // actionableList.innerHTML = "";
 
   const lines = summaryText.split("\n");
   let section = null;
@@ -78,10 +79,11 @@ function renderTopGrowingRegions(region, summaryText) {
     } else if (trimmed.startsWith("2.")) {
       section = "drivers";
       continue;
-    } else if (trimmed.startsWith("3.")) {
-      section = "actionable";
-      continue;
     }
+    // } else if (trimmed.startsWith("3.")) {
+    //   section = "actionable";
+    //   continue;
+    // }
 
     if (trimmed.startsWith("-")) {
       const li = document.createElement("li");
@@ -100,9 +102,10 @@ function renderTopGrowingRegions(region, summaryText) {
         topList.appendChild(li);
       } else if (section === "drivers") {
         keyDriversList.appendChild(li);
-      } else if (section === "actionable") {
-        actionableList.appendChild(li);
-      }
+       } 
+        // else if (section === "actionable") {
+      //   actionableList.appendChild(li);
+      // }
     }
   }
 }
@@ -111,11 +114,11 @@ function renderTopGrowingRegions(region, summaryText) {
 
 function renderNegativeInsights(region, text) {
   const list = document.querySelector(`#${region}NegativeList`);
-  const actionList = document.querySelector(`#${region}ActionableList`);
-  if (!list || !actionList) return;
+  // const actionList = document.querySelector(`#${region}ActionableList`);
+  // if (!list || !actionList) return;
 
   list.innerHTML = "";
-  actionList.innerHTML = "";
+  // actionList.innerHTML = "";
 
   const points = text.split("\n").filter(line =>
     line.trim().startsWith("-") || line.trim().match(/^[••*]/)
