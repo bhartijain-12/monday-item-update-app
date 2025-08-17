@@ -92,8 +92,8 @@
 }
 
 .card {
-  max-height: 200px;   /* adjust as per your design */
-  overflow-y: auto;    /* enables vertical scrolling */
+  max-height: 31rem;  
+  overflow-y: auto;    
   padding: 1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -113,4 +113,5 @@
 .card::-webkit-scrollbar-thumb:hover {
   background: #666;
 } */
+
 
