@@ -157,7 +157,7 @@ function renderNegativeInsights(region, text) {
     btn.textContent = label;
     btn.addEventListener("click", () => triggerAction(actionType, region, Array.from(points).join("\n")));
     li.appendChild(btn);
-    actionList.appendChild(li);
+    // actionList.appendChild(li);
   });
 }
 
